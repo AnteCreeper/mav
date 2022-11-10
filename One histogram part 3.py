@@ -755,11 +755,25 @@ class Ploter():
         self.ax.plot(x,np.exp(logprobes), lw=4, c='navy')
     
     def plot_mean(self):
-        self.ax.vlines (np.mean(self.distr[:]), # координата по "x"
+        self.plot_line(np.mean(self.distr[:]))
+       
+        
+    def plot_line(self, x):
+        self.ax.vlines (x, # координата по "x"
                 0, self.max_y,   # Начало и Конец пр "Y"
                 colors=colors[6], # Цвет Линии
                 linewidth=2.5,   # Толщина линии
                 linestyles='--')  # Стиль Линии 
+    def plot_p_level(self, Critich,delta):
+        
+        self.ax.vlines (delta, # координата по "x"
+                0, max_g1,   # Начало и Конец пр "Y"
+                colors=colors[2], # Цвет Линии
+                linewidth=4.5,   # Толщина линии
+                linestyles='-')  # Стиль Линии 
+        
+        
+        
         
 a1 = Ploter("a1")
 
