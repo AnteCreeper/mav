@@ -170,6 +170,18 @@ colors[12] ='skyblue' #См. Полную Таблицу Цветов в Mathplo
 colors[13] ='orangered'
 colors[14] ='tomato'
 
+
+
+
+
+print("\n\n\n")
+
+#******************************************************************************
+#    pass
+
+
+
+
 fig, (ax3) = plt.subplots(1, 1, figsize=(12, 4))
 plt.subplot(1, 1, 1)
 
@@ -518,8 +530,6 @@ ax2.legend(loc="upper right",  fontsize=12)
 ax2.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
 """
 
-
-#******************************************************************************
 labels_all = ["Разность средних"]
 kde_parametrs1 = [0.1]
 distr_delta=Delta[:] # "distr" = 1D массив, в котором данные для построения Гистограммы
@@ -706,6 +716,54 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 
 
 #******************************************************************************
+class Ploter():
+    def __init__(self, name):
+        self.name = name
+        self.fig, self.ax = plt.subplots(figsize=(12, 4))
+        #self.ax.set_facecolor()
+        print("Hello World, " + self.name)      
+        self.prop = dict( # Параметры Отрисовки Гистограммы
+                        alpha=1.0, # Прозрачность
+                        linewidth=2,      # Толщина линии Прямоуольников
+                        linestyle='-',    # Стиль Линии                
+                        edgecolor='black', # Цвет Линии
+                        facecolor="tomato")
+        
+        
+    def plot_hist(self, distr,bins):
+        self.distr = distr
+        self.ax.hist(self.distr, 
+                    bins,
+                    label=self.name,
+                    density=True,
+                    **self.prop) 
+    
+
+    def plot_kde(self,kde_parametrs, steps = 1000, left = None, right = None  ):
+        kde_linspace = np.zeros([1,2])
+        if left is None:
+            left = min(self.distr)*1.3
+            
+        if right is None:
+            right = max(self.distr)*1.3
+        kde_linspace[0,:]=[left, right]#-10,10]##left,right]
+        x = np.linspace(*kde_linspace1[0,:], steps) # См. след. строку
+        kde = KernelDensity(bandwidth=kde_parametrs)  #Обратно к Высоте Огибающей !!!
+        kde.fit(self.distr[:,None])  # Подгонка Огибающей
+        logprobes = kde.score_samples(x[:,None])
+        self.ax.plot(x,np.exp(logprobes), lw=4, c='navy')
+    
+a1 = Ploter("a1")
+
+a1.plot_hist(distr_delta, 20)
+a1.plot_kde(0.08)
+
+
+
+
+print("\n\n\n")
+stop
+
 
 fig, (ax4) = plt.subplots(1, 1, figsize=(12, 5))
 plt.subplot(1, 1, 1)
