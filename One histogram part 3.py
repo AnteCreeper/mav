@@ -529,7 +529,7 @@ ax2.legend(loc="upper right",  fontsize=12)
 
 ax2.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
 """
-
+#%%
 labels_all = ["Разность средних"]
 kde_parametrs1 = [0.1]
 distr_delta=Delta[:] # "distr" = 1D массив, в котором данные для построения Гистограммы
@@ -717,17 +717,18 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 
 #******************************************************************************
 class Ploter():
-    def __init__(self, name):
+    def __init__(self, name,*distr):
         self.name = name
+        self.distr = distr
         self.fig, self.ax = plt.subplots(figsize=(12, 4))
-        #self.ax.set_facecolor()
+        #self.ax.set_facecolor(colors[2])
         print("Hello World, " + self.name)      
         self.prop = dict( # Параметры Отрисовки Гистограммы
                         alpha=1.0, # Прозрачность
                         linewidth=2,      # Толщина линии Прямоуольников
                         linestyle='-',    # Стиль Линии                
                         edgecolor='black', # Цвет Линии
-                        facecolor="tomato")
+                        facecolor=colors[12])
         
         
     def plot_hist(self, distr,bins):
@@ -748,38 +749,44 @@ class Ploter():
         if right is None:
             right = max(self.distr)*1.3
         kde_linspace[0,:]=[left, right]
-        x = np.linspace(*kde_linspace1[0,:], steps)
-        kde = KernelDensity(bandwidth=kde_parametrs)
-        kde.fit(self.distr[:,None]) 
-        logprobes = kde.score_samples(x[:,None])
-        self.ax.plot(x,np.exp(logprobes), lw=4, c='navy')
+        self.x = np.linspace(*kde_linspace[0,:], steps)
+        self.kde = KernelDensity(bandwidth=kde_parametrs)
+        self.kde.fit(self.distr[:,None]) 
+        self.logprobes = self.kde.score_samples(self.x[:,None])
+        self.ax.plot(self.x,np.exp(logprobes), lw=4, c='navy')
     
     def plot_mean(self):
         self.plot_line(np.mean(self.distr[:]))
        
-        
-    def plot_line(self, x):
-        self.ax.vlines (x, # координата по "x"
+    def _fill_between(self,mean):
+       kde_linspace = np.zeros([1,2])
+       kde_linspace[0,:]=[mean,max(self.distr)*1.3]
+       _x = np.linspace(*kde_linspace[0,:], 1000)
+       logprobes = self.kde.score_samples(_x[:,None])
+       self.ax.plot(_x,np.exp(logprobes), lw=4, c="darkred")
+       self.ax.fill_between(_x, np.exp(logprobes),color='red', alpha  = 0.3)
+       
+    def plot_line(self, x_coor):
+        self.ax.vlines (x_coor, # координата по "x"
                 0, self.max_y,   # Начало и Конец пр "Y"
                 colors=colors[6], # Цвет Линии
                 linewidth=2.5,   # Толщина линии
                 linestyles='--')  # Стиль Линии 
-    def plot_p_level(self, Critich,delta):
-        
-        self.ax.vlines (delta, # координата по "x"
-                0, max_g1,   # Начало и Конец пр "Y"
-                colors=colors[2], # Цвет Линии
-                linewidth=4.5,   # Толщина линии
-                linestyles='-')  # Стиль Линии 
+    def plot_p_level(self, mean):
+        self.plot_line(mean)
+        self._fill_between(mean)
         
         
         
         
-a1 = Ploter("a1")
+        
+a1 = Ploter("a1",distr_delta)
 
 a1.plot_hist(distr_delta, 20)
 a1.plot_kde(0.08)
 a1.plot_mean()
+a1.plot_p_level(mean)
+
 
 
 
