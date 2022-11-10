@@ -732,11 +732,12 @@ class Ploter():
         
     def plot_hist(self, distr,bins):
         self.distr = distr
-        self.ax.hist(self.distr, 
+        Set = self.ax.hist(self.distr, 
                     bins,
                     label=self.name,
                     density=True,
                     **self.prop) 
+        self.max_y = Set[0].max() * 1.5
     
 
     def plot_kde(self,kde_parametrs, steps = 1000, left = None, right = None  ):
@@ -746,18 +747,25 @@ class Ploter():
             
         if right is None:
             right = max(self.distr)*1.3
-        kde_linspace[0,:]=[left, right]#-10,10]##left,right]
-        x = np.linspace(*kde_linspace1[0,:], steps) # См. след. строку
-        kde = KernelDensity(bandwidth=kde_parametrs)  #Обратно к Высоте Огибающей !!!
-        kde.fit(self.distr[:,None])  # Подгонка Огибающей
+        kde_linspace[0,:]=[left, right]
+        x = np.linspace(*kde_linspace1[0,:], steps)
+        kde = KernelDensity(bandwidth=kde_parametrs)
+        kde.fit(self.distr[:,None]) 
         logprobes = kde.score_samples(x[:,None])
         self.ax.plot(x,np.exp(logprobes), lw=4, c='navy')
     
+    def plot_mean(self):
+        self.ax.vlines (np.mean(self.distr[:]), # координата по "x"
+                0, self.max_y,   # Начало и Конец пр "Y"
+                colors=colors[6], # Цвет Линии
+                linewidth=2.5,   # Толщина линии
+                linestyles='--')  # Стиль Линии 
+        
 a1 = Ploter("a1")
 
 a1.plot_hist(distr_delta, 20)
 a1.plot_kde(0.08)
-
+a1.plot_mean()
 
 
 
