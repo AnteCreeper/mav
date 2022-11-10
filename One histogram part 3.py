@@ -170,10 +170,13 @@ colors[12] ='skyblue' #См. Полную Таблицу Цветов в Mathplo
 colors[13] ='orangered'
 colors[14] ='tomato'
 
-fig, (ax1,ax2,ax3) = plt.subplots(3, 1, figsize=(12, 18))
-plt.subplot(3, 1, 1)
-ax1.set_facecolor(colors[11])
-ax2.set_facecolor(colors[11])
+fig, (ax3) = plt.subplots(1, 1, figsize=(12, 4))
+plt.subplot(1, 1, 1)
+
+#fig, (ax1,ax2,ax3) = plt.subplots(3, 1, figsize=(12, 18))
+#plt.subplot(3, 1, 1)
+#ax1.set_facecolor(colors[11])
+#ax2.set_facecolor(colors[11])
 ax3.set_facecolor(colors[11])
 
  
@@ -241,7 +244,7 @@ distr_before=A[:] # "distr" = 1D массив, в котором данные д
 distr_after=B[:]
 
 xx1 = np.linspace(*kde_linspace[0,:], 200) # См. след. строку
-
+"""
 kde = KernelDensity(bandwidth=kde_parametrs[0])  #Обратно к Высоте Огибающей !!!
 kde.fit(distr_before[:,None])  # Подгонка Огибающей
 logprobes = kde.score_samples(xx1[:,None])  # Огибающая стороится почему-то в логарифмах,
@@ -327,7 +330,7 @@ ax1.set_title("Распределение экспериментальных з�
 
 ax1.legend(loc="upper right",  fontsize=12)
 """
-
+"""
 ---ax1.vlines ( # рисуем верикаль. линии, соотвествующие Среднему (mu1)
         vline[0], # координата по "x"
         0, 0.06,   # Начало и Конец пр "Y"
@@ -436,7 +439,7 @@ ax1.legend(loc="upper right",  fontsize=12)
 ax1.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
 """
 #******************************************************************************
-
+"""
 kde_parametrs1 = [0.15]
 distr1_before=average_value_bootstrep_before[:] # "distr" = 1D массив, в котором данные для построения Гистограммы
 distr1_after=average_value_bootstrep_after[:]
@@ -513,6 +516,7 @@ ax2.legend(loc="upper right",  fontsize=12)
 
 
 ax2.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
+"""
 
 
 #******************************************************************************
@@ -537,7 +541,6 @@ logprobes_ = kde3.score_samples(xx3_[:,None])
 ax3.plot(xx3,np.exp(logprobes), lw=4, c='navy') # Рисуем Огибающую (поэтому при рисовании делаем потенциирование)
 ax3.plot(xx3_,np.exp(logprobes_), lw=4, c="darkred")
 
-        
 
         
 l = len(np.exp(logprobes_))
@@ -706,7 +709,7 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 
 fig, (ax4) = plt.subplots(1, 1, figsize=(12, 5))
 plt.subplot(1, 1, 1)
-ax1.set_facecolor(colors[11])
+#ax1.set_facecolor(colors[11])
 
 text = [chr(956)+'$_'+chr(916)+'$'+'$_{при}$'+ chr(32)+'$_{ОТКЛОНЕНИИ}$'+ chr(32)+'$_{ Н0}$ =', # $ - переход на нижний регистр. $ - возврат в средний регистр
         'Граница ошибки 1-го рода']
