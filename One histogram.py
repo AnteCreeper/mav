@@ -26,6 +26,7 @@ n_size_Result=1000
 
 Result = np.zeros([n_size_Result])
 
+kk = 8
 
 
 mu1=382                                                                        #mu1=50
