@@ -768,7 +768,7 @@ class Ploter():
         self.max_y = Set[0].max() * 1.5
         self.ax.legend(loc="upper right",  fontsize=12)
         #print(Set[0].max() * 1.5)
-    
+
 
     def plot_kde(self,kde_parametrs, steps = 1000, left = None, right = None  ):
         """
@@ -788,7 +788,6 @@ class Ploter():
         self.middle = np.mean(self.distr[:])
         if left is None:
             left = min(self.distr)*1.3 - self.middle*0.3
-            
         if right is None:
             right = max(self.distr)*1.3 + self.middle*0.3
         kde_linspace[0,:]=[left, right]
@@ -797,10 +796,12 @@ class Ploter():
         self.kde.fit(self.distr[:,None])
         self.logprobes = self.kde.score_samples(self.x[:,None])
         self.ax.plot(self.x,np.exp(logprobes), lw=4, c='navy')
+        
     
     def plot_middle(self):
         """Рисует прямую описывающую серезину гистограммы"""
         self.plot_line(self.middle)
+        
        
     def _fill_between(self,mean):
         """Закрытый; Закрышивает часть под кривой, и меняет цвет части этой прямой"""
@@ -810,6 +811,7 @@ class Ploter():
         logprobes = self.kde.score_samples(_x[:,None])
         self.ax.plot(_x,np.exp(logprobes), lw=4, c="darkred")
         self.ax.fill_between(_x, np.exp(logprobes),color='red', alpha  = 0.3)
+        
        
     def plot_line(self, x_coor,linestyles = "-"):
         """Рисует вертикальную прямую"""
@@ -819,39 +821,38 @@ class Ploter():
                 linewidth=2,   # Толщина линии
                 linestyles=linestyles)  # Стиль Линии 
         
+        
     def plot_p_level(self, mean):
         """Рисует plevel"""
         self.plot_line(mean,"--")
         self._fill_between(mean)
+        
         
     def set_facecolor(self,color = 'floralwhite'):
         """Добавляет цвет фона и фон сетки"""
         self.ax.set_facecolor(color)
         self.ax.grid(True, ls='--', c=colors[6],alpha=0.3 )
         
+        
     def lim(self,left = None,right = None):
         """Задаёт приделы графика"""
         if left is None:
             left = min(self.distr)*1.3 - self.middle*0.3
-            
         if right is None:
             right = max(self.distr)*1.3 + self.middle*0.3
         self.ax.set_ylim(0,self.max_y)
         self.ax.set_xlim(left,right)
         
+        
     def title(self, title):
+        """Задаёт название графика"""
         self.ax.set_title(title, fontsize=16) # # Подпись над рисунком 
-        
-        
         
         
         
 a1 = Ploter("a1")
 
 a1.plot_hist(distr_delta, 20)
-#a1.plot_hist(Metrics_in_effect[:], 20)
-
-
 a1.plot_kde(0.08)
 a1.plot_middle()
 a1.plot_p_level(mean)
