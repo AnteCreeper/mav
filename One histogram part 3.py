@@ -716,14 +716,22 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 
 
 #******************************************************************************
+"""
+присутствие name в __init__ вприводит к тому что при второй и последуйщей гистограме
+она будет иметь такую же легенду что и первая гистограма
+Решение:
+    перенести параметр в plot_hist и там создавать легенду
+
+"""
+#******************************************************************************
 class Ploter():
     def __init__(self, name):
         """Инициализация
         
             
         Создаётся:
-            name - имя переменной,
-            distr - массив данных,
+            name: имя переменной,
+            distr: массив данных,
             fig,
             ax,
             prop
@@ -742,6 +750,15 @@ class Ploter():
         
         
     def plot_hist(self, distr,bins):
+        """
+        Рисует гистограмму
+
+
+        distr : массив данных.
+        bins : кол-во колбочек на гистограмме.
+
+        max_y : максимальная высота в зависимости от инициализируемой сейчас гистограммы 
+        """
         self.distr = distr
         Set = self.ax.hist(self.distr, 
                     bins,
@@ -749,46 +766,81 @@ class Ploter():
                     density=True,
                     **self.prop) 
         self.max_y = Set[0].max() * 1.5
+        self.ax.legend(loc="upper right",  fontsize=12)
+        #print(Set[0].max() * 1.5)
     
 
     def plot_kde(self,kde_parametrs, steps = 1000, left = None, right = None  ):
+        """
+        Рисуется огибающая и объявляются переменные
+
+        Parameters
+        ----------
+        kde_parametrs : кривизна огибающей.
+        steps : количестов точек по которой строится кривая.
+        left : левый край.
+        right : правый край.
+
+        middle :середина гистограммы
+        
+        """
         kde_linspace = np.zeros([1,2])
+        self.middle = np.mean(self.distr[:])
         if left is None:
-            left = min(self.distr)*1.3
+            left = min(self.distr)*1.3 - self.middle*0.3
             
         if right is None:
-            right = max(self.distr)*1.3
+            right = max(self.distr)*1.3 + self.middle*0.3
         kde_linspace[0,:]=[left, right]
         self.x = np.linspace(*kde_linspace[0,:], steps)
         self.kde = KernelDensity(bandwidth=kde_parametrs)
-        self.kde.fit(self.distr[:,None]) 
+        self.kde.fit(self.distr[:,None])
         self.logprobes = self.kde.score_samples(self.x[:,None])
         self.ax.plot(self.x,np.exp(logprobes), lw=4, c='navy')
     
-    def plot_mean(self):
-        self.plot_line(np.mean(self.distr[:]))
+    def plot_middle(self):
+        """Рисует прямую описывающую серезину гистограммы"""
+        self.plot_line(self.middle)
        
     def _fill_between(self,mean):
-       kde_linspace = np.zeros([1,2])
-       kde_linspace[0,:]=[mean,max(self.distr)*1.3]
-       _x = np.linspace(*kde_linspace[0,:], 1000)
-       logprobes = self.kde.score_samples(_x[:,None])
-       self.ax.plot(_x,np.exp(logprobes), lw=4, c="darkred")
-       self.ax.fill_between(_x, np.exp(logprobes),color='red', alpha  = 0.3)
+        """Закрытый; Закрышивает часть под кривой, и меняет цвет части этой прямой"""
+        kde_linspace = np.zeros([1,2])
+        kde_linspace[0,:]=[mean,max(self.distr)*1.3]
+        _x = np.linspace(*kde_linspace[0,:], 1000)
+        logprobes = self.kde.score_samples(_x[:,None])
+        self.ax.plot(_x,np.exp(logprobes), lw=4, c="darkred")
+        self.ax.fill_between(_x, np.exp(logprobes),color='red', alpha  = 0.3)
        
-    def plot_line(self, x_coor):
+    def plot_line(self, x_coor,linestyles = "-"):
+        """Рисует вертикальную прямую"""
         self.ax.vlines (x_coor, # координата по "x"
                 0, self.max_y,   # Начало и Конец пр "Y"
                 colors=colors[6], # Цвет Линии
-                linewidth=2.5,   # Толщина линии
-                linestyles='--')  # Стиль Линии 
+                linewidth=2,   # Толщина линии
+                linestyles=linestyles)  # Стиль Линии 
+        
     def plot_p_level(self, mean):
-        self.plot_line(mean)
+        """Рисует plevel"""
+        self.plot_line(mean,"--")
         self._fill_between(mean)
         
     def set_facecolor(self,color = 'floralwhite'):
+        """Добавляет цвет фона и фон сетки"""
         self.ax.set_facecolor(color)
         self.ax.grid(True, ls='--', c=colors[6],alpha=0.3 )
+        
+    def lim(self,left = None,right = None):
+        """Задаёт приделы графика"""
+        if left is None:
+            left = min(self.distr)*1.3 - self.middle*0.3
+            
+        if right is None:
+            right = max(self.distr)*1.3 + self.middle*0.3
+        self.ax.set_ylim(0,self.max_y)
+        self.ax.set_xlim(left,right)
+        
+    def title(self, title):
+        self.ax.set_title(title, fontsize=16) # # Подпись над рисунком 
         
         
         
@@ -797,10 +849,15 @@ class Ploter():
 a1 = Ploter("a1")
 
 a1.plot_hist(distr_delta, 20)
+#a1.plot_hist(Metrics_in_effect[:], 20)
+
+
 a1.plot_kde(0.08)
-a1.plot_mean()
+a1.plot_middle()
 a1.plot_p_level(mean)
 a1.set_facecolor()
+a1.title("Распределение разности средних")
+a1.lim()
 
 
 
