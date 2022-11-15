@@ -717,9 +717,19 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 
 #******************************************************************************
 class Ploter():
-    def __init__(self, name,*distr):
+    def __init__(self, name):
+        """Инициализация
+        
+            
+        Создаётся:
+            name - имя переменной,
+            distr - массив данных,
+            fig,
+            ax,
+            prop
+        """
         self.name = name
-        self.distr = distr
+        #self.distr = distr
         self.fig, self.ax = plt.subplots(figsize=(12, 4))
         #self.ax.set_facecolor(colors[2])
         print("Hello World, " + self.name)      
@@ -776,16 +786,21 @@ class Ploter():
         self.plot_line(mean)
         self._fill_between(mean)
         
+    def set_facecolor(self,color = 'floralwhite'):
+        self.ax.set_facecolor(color)
+        self.ax.grid(True, ls='--', c=colors[6],alpha=0.3 )
         
         
         
         
-a1 = Ploter("a1",distr_delta)
+        
+a1 = Ploter("a1")
 
 a1.plot_hist(distr_delta, 20)
 a1.plot_kde(0.08)
 a1.plot_mean()
 a1.plot_p_level(mean)
+a1.set_facecolor()
 
 
 
