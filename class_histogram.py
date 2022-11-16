@@ -813,18 +813,18 @@ class Ploter():
         self.ax.fill_between(_x, np.exp(logprobes),color='red', alpha  = 0.3)
         
        
-    def plot_line(self, x_coor,linestyles = "-"):
+    def plot_line(self, x_coor,linestyles = "-",colors = "k",linewidth=2):
         """Рисует вертикальную прямую"""
         self.ax.vlines (x_coor, # координата по "x"
                 0, self.max_y,   # Начало и Конец пр "Y"
-                colors=colors[6], # Цвет Линии
-                linewidth=2,   # Толщина линии
-                linestyles=linestyles)  # Стиль Линии 
+                colors = colors, # Цвет Линии
+                linewidth = linewidth,   # Толщина линии
+                linestyles = linestyles)  # Стиль Линии 
         
         
     def plot_p_level(self, mean):
         """Рисует plevel"""
-        self.plot_line(mean,"--")
+        self.plot_line(mean,"--","darkred", 3)
         self._fill_between(mean)
         
         
