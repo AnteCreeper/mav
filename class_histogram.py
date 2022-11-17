@@ -725,7 +725,7 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 """
 #******************************************************************************
 class Ploter():
-    def __init__(self, name):
+    def __init__(self, name,*distr):
         """Инициализация
         
             
@@ -749,7 +749,7 @@ class Ploter():
                         facecolor=colors[12])
         
         
-    def plot_hist(self, distr,bins):
+    def plot_hist(self, distr,bins,label):
         """
         Рисует гистограмму
 
@@ -760,9 +760,10 @@ class Ploter():
         max_y : максимальная высота в зависимости от инициализируемой сейчас гистограммы 
         """
         self.distr = distr
+        self.middle = np.mean(self.distr[:])
         Set = self.ax.hist(self.distr, 
                     bins,
-                    label=self.name,
+                    label=label,
                     density=True,
                     **self.prop) 
         self.max_y = Set[0].max() * 1.5
@@ -770,7 +771,7 @@ class Ploter():
         #print(Set[0].max() * 1.5)
 
 
-    def plot_kde(self,kde_parametrs, steps = 1000, left = None, right = None  ):
+    def plot_kde(self,kde_parametrs, steps = 1000, left = None, right = None):
         """
         Рисуется огибающая и объявляются переменные
 
@@ -785,7 +786,6 @@ class Ploter():
         
         """
         kde_linspace = np.zeros([1,2])
-        self.middle = np.mean(self.distr[:])
         if left is None:
             left = min(self.distr)*1.3 - self.middle*0.3
         if right is None:
@@ -831,10 +831,10 @@ class Ploter():
     def set_facecolor(self,color = 'floralwhite'):
         """Добавляет цвет фона и фон сетки"""
         self.ax.set_facecolor(color)
-        self.ax.grid(True, ls='--', c=colors[6],alpha=0.3 )
+        self.ax.grid(True, ls='--', c='k',alpha=0.3)
         
         
-    def lim(self,left = None,right = None):
+    def set_lim(self,left = None,right = None):
         """Задаёт приделы графика"""
         if left is None:
             left = min(self.distr)*1.3 - self.middle*0.3
@@ -849,17 +849,49 @@ class Ploter():
         self.ax.set_title(title, fontsize=16) # # Подпись над рисунком 
         
         
+    def _find_p_level(self, mean):
+        return (100-st.percentileofscore(self.distr,mean)) / 100
+    
+    
+#    def _fine_left_or_right()
+
+    
+    
+    def _plot_arrow(self,text,xtext, ytext,x,y,color = 'k'):
+        
+        self.ax.annotate(text,
+            fontsize=14,
+            xy=(xtext, ytext),  # Левые координаты (x,y) линии
+            xytext=(x, y),   # Правые координаты (x,y) линии
+            arrowprops={'color': "darkred",'arrowstyle': '->', 'lw':2 } # Тип линии и её толщина
+            )
+        print(color)
+        
+    #сделать возможность автоматизировать
+    def _plot_line_and_signature(self,mean,xtext,ytext,x,y):
+        self._plot_arrow(f"{round(self._find_p_level(mean), 5)}",xtext,ytext,x,y,"darkred")#f"{self._find_p_level(mean)}",self.distr*0.9,self.max_y*0.5,self.distr*0.8,self.max_y*0.3)
+        
+        
+    def set_labels(self,xlabel,ylabel):
+        self.ax.set_xlabel(xlabel, fontsize=16)
+        self.ax.set_ylabel(ylabel, fontsize=16)
+        
         
 a1 = Ploter("a1")
 
-a1.plot_hist(distr_delta, 20)
+a1.plot_hist(distr_delta, 20, "Разность средних")
 a1.plot_kde(0.08)
 a1.plot_middle()
 a1.plot_p_level(mean)
 a1.set_facecolor()
+a1.set_labels("Плотность вероятности", "Разность средних")
 a1.title("Распределение разности средних")
-a1.lim()
-
+#a1.plot_arrow("1111")
+#a1._plot_arrow("111",0.5,0.5,1,1,"darkred")
+#a1._plot_line_and_signature
+a1._plot_line_and_signature(mean,0.7,0.4,1,1)
+a1.set_lim()
+#print(a1._find_p_level(mean),"--------------------")
 
 
 
