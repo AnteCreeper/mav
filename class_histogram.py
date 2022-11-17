@@ -725,7 +725,7 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 """
 #******************************************************************************
 class Ploter():
-    def __init__(self, name,*distr):
+    def __init__(self,*distr):
         """Инициализация
         
             
@@ -736,11 +736,10 @@ class Ploter():
             ax,
             prop
         """
-        self.name = name
         #self.distr = distr
         self.fig, self.ax = plt.subplots(figsize=(12, 4))
         #self.ax.set_facecolor(colors[2])
-        print("Hello World, " + self.name)      
+        #print("Hello World, " + self.name)      
         self.prop = dict( # Параметры Отрисовки Гистограммы
                         alpha=1.0, # Прозрачность
                         linewidth=2,      # Толщина линии Прямоуольников
@@ -795,7 +794,7 @@ class Ploter():
         self.kde = KernelDensity(bandwidth=kde_parametrs)
         self.kde.fit(self.distr[:,None])
         self.logprobes = self.kde.score_samples(self.x[:,None])
-        self.ax.plot(self.x,np.exp(logprobes), lw=4, c='navy')
+        self.ax.plot(self.x,np.exp(self.logprobes), lw=4, c='navy')
         
     
     def plot_middle(self):
@@ -803,10 +802,13 @@ class Ploter():
         self.plot_line(self.middle)
         
        
-    def _fill_between(self,mean):
+    def _fill_between(self,mean,bool_left = False):
         """Закрытый; Закрышивает часть под кривой, и меняет цвет части этой прямой"""
         kde_linspace = np.zeros([1,2])
-        kde_linspace[0,:]=[mean,max(self.distr)*1.3]
+        if bool_left == False:
+            kde_linspace[0,:]=[mean,max(self.distr)*1.3]
+        else:
+            kde_linspace[0,:]=[min(self.distr)*1.3,mean]
         _x = np.linspace(*kde_linspace[0,:], 1000)
         logprobes = self.kde.score_samples(_x[:,None])
         self.ax.plot(_x,np.exp(logprobes), lw=4, c="darkred")
@@ -842,6 +844,8 @@ class Ploter():
             right = max(self.distr)*1.3 + self.middle*0.3
         self.ax.set_ylim(0,self.max_y)
         self.ax.set_xlim(left,right)
+        print(max(self.distr)*1.3 + self.middle*0.3)
+        print(left,"  ",right)
         
         
     def title(self, title):
@@ -858,14 +862,13 @@ class Ploter():
     
     
     def _plot_arrow(self,text,xtext, ytext,x,y,color = 'k'):
-        
         self.ax.annotate(text,
             fontsize=14,
             xy=(xtext, ytext),  # Левые координаты (x,y) линии
             xytext=(x, y),   # Правые координаты (x,y) линии
             arrowprops={'color': "darkred",'arrowstyle': '->', 'lw':2 } # Тип линии и её толщина
             )
-        print(color)
+
         
     #сделать возможность автоматизировать
     def _plot_line_and_signature(self,mean,xtext,ytext,x,y):
@@ -877,11 +880,17 @@ class Ploter():
         self.ax.set_ylabel(ylabel, fontsize=16)
         
         
-a1 = Ploter("a1")
+    def plot_mistake_one_line(self):
+        Alfa=0.1
+        Delta_Critich=np.percentile(Delta,100-Alfa*100)
+        self.plot_line(Delta_Critich,colors = 'yellow', linewidth = 4)
+        self._fill_between(Delta_Critich, True)
+        
+a1 = Ploter()
 
 a1.plot_hist(distr_delta, 20, "Разность средних")
-a1.plot_kde(0.08)
 a1.plot_middle()
+a1.plot_kde(0.08)
 a1.plot_p_level(mean)
 a1.set_facecolor()
 a1.set_labels("Плотность вероятности", "Разность средних")
@@ -894,9 +903,19 @@ a1.set_lim()
 #print(a1._find_p_level(mean),"--------------------")
 
 
+a2 = Ploter()
+a2.plot_hist(Metrics_in_effect, 20, "Разность средних")
+a2.plot_middle()
+a2.plot_kde(0.08)
+a2.set_lim()
+a2.plot_mistake_one_line()
+# продублировать график снизу
+Alfa=0.1
+Delta_Critich=np.percentile(Delta,100-Alfa*100)
+
 
 print("\n\n\n")
-stop
+
 
 
 fig, (ax4) = plt.subplots(1, 1, figsize=(12, 5))
