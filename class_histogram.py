@@ -164,7 +164,7 @@ print("\n\n\n")
 # ******************************************************************************
 #    pass
 
-
+"""
 fig, (ax3) = plt.subplots(1, 1, figsize=(12, 4))
 plt.subplot(1, 1, 1)
 
@@ -208,7 +208,7 @@ vline_before = np.zeros([1])
 vline_after = np.zeros([1])
 vline_before[0] = mean_estimate_before  # mu (=Сред.) для 1-вой выборки
 vline_after[0] = mean_estimate_after
-
+"""
 prop_before = dict(  # Параметры Отрисовки Гистограммы
     alpha=1.0,  # Прозрачность
     linewidth=2,  # Толщина линии прямоугольников
@@ -216,7 +216,7 @@ prop_before = dict(  # Параметры Отрисовки Гистограм�
     edgecolor='black',  # Цвет Линии
     facecolor=colors[12],  # Цвет заливки прямоугольников Гистограммы
 )
-
+"""
 prop_after = dict(  # Параметры Отрисовки Гистограммы
     alpha=1.0,  # Прозрачность
     linewidth=2,  # Толщина линии прямоугольников
@@ -229,7 +229,7 @@ distr_before = A[:]  # "distr" = 1D массив, в котором данные
 distr_after = B[:]
 
 xx1 = np.linspace(*kde_linespace[0, :], 200)  # См. след. строку
-"""
+
 kde = KernelDensity(bandwidth=kde_parametrs[0])  #Обратно к Высоте Огибающей !!!
 kde.fit(distr_before[:,None])  # Подгонка Огибающей
 logprobes = kde.score_samples(xx1[:,None])  # Огибающая стороится почему-то в логарифмах,
@@ -501,9 +501,9 @@ ax2.legend(loc="upper right",  fontsize=12)
 
 
 ax2.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
-"""
+
 # %%
-labels_all = ["Разность средних"]
+
 kde_parametrs1 = [0.1]
 distr_delta = Delta[:]  # "distr" = 1D массив, в котором данные для построения Гистограммы
 
@@ -583,11 +583,11 @@ print("Всего полезных элементов:", nn, "\nДлина по�
 area = np.trapz(mat, dx=n / nn)
 print("Вся площадь:", area)
 
-"""
+
 norm_rv = st.norm(loc=distr_delta.mean(), scale=distr_delta.std())
 p = 1 - norm_rv.cdf(mean)
 print("Ещё некая площадь:",p)
-"""
+
 
 nn = 0
 for i in range(len(np.exp(logprobes_))):
@@ -640,7 +640,7 @@ print("Нахождение площади дубовым методом", area)
 print("Ещё некая площадь:", p)
 
 # ******************************************************************************
-
+"""
 n_size_Effect = 1000  # Размер массива Effect
 Effect = np.zeros([n_size_Effect])  # Объявляем массив
 
@@ -801,11 +801,13 @@ class Ploter:
         self.ax.set_title(title, fontsize=16)  # # Подпись над рисунком
 
     def _find_p_level(self, mean):
+        """Вычисление p level"""
         return (100 - st.percentileofscore(self.distr, mean)) / 100
 
     #    def _fine_left_or_right()
 
     def _plot_arrow(self, text, xtext, ytext, x, y, color='k'):
+        """Вызов аннотации"""
         self.ax.annotate(text,
                          fontsize=14,
                          xy=(xtext, ytext),  # Левые координаты (x,y) линии
@@ -819,6 +821,7 @@ class Ploter:
                          "darkred")  # f"{self._find_p_level(mean)}",self.distr*0.9,self.max_y*0.5,self.distr*0.8,self.max_y*0.3)
 
     def set_labels(self, xlabel, ylabel):
+        """Подпись осей"""
         self.ax.set_xlabel(xlabel, fontsize=16)
         self.ax.set_ylabel(ylabel, fontsize=16)
 
@@ -829,22 +832,21 @@ class Ploter:
         self._fill_between(delta_critich, True)
 
 
-a1 = Ploter()
+def Distribution_of_the_mean_difference():
+    """Распределение разности средних"""
+    a1 = Ploter()
+    a1.plot_hist(Delta[:], 20, "Разность средних")
+    a1.plot_middle()
+    a1.plot_kde(0.08)
+    a1.plot_p_level(mean)
+    a1.set_facecolor()
+    a1.set_labels("Плотность вероятности", "Разность средних")
+    a1.title("Распределение разности средних от Histogram")
+    a1._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
+    a1.set_lim()
 
-a1.plot_hist(distr_delta, 20, "Разность средних")
-a1.plot_middle()
-a1.plot_kde(0.08)
-a1.plot_p_level(mean)
-a1.set_facecolor()
-a1.set_labels("Плотность вероятности", "Разность средних")
-a1.title("Распределение разности средних")
-# a1.plot_arrow("1111")
-# a1._plot_arrow("111",0.5,0.5,1,1,"darkred")
-# a1._plot_line_and_signature
-a1._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
-a1.set_lim()
-# print(a1._find_p_level(mean),"--------------------")
 
+Distribution_of_the_mean_difference()
 
 a2 = Ploter()
 a2.plot_hist(Metrics_in_effect, 20, "Разность средних")
@@ -873,7 +875,7 @@ kde_linspace1 = np.zeros([1, 2])
 kde_linspace1[0, :] = [min(distr_effect) * 1.3, max(distr_effect) * 1.3]
 kde_linspace2 = np.zeros([1, 2])
 kde_linspace2[0, :] = [min(distr_effect) * 1.3, Delta_Critich]
-
+labels_all = ["Разность средних"]
 xx4_ = np.linspace(*kde_linspace2[0, :], 1000)  # См. след. строку
 xx4 = np.linspace(*kde_linspace1[0, :], 1000)  # См. след. строку
 
