@@ -844,7 +844,6 @@ def distribution_of_the_mean_difference():
     a1.plot_kde(0.08)
     a1.plot_middle()
     a1.plot_p_level(mean)
-    print(mean, "  <---")
     a1.set_facecolor()
     a1.set_labels("Плотность вероятности", "Разность средних")
     a1.title("Распределение разности средних от Histogram")
