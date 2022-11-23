@@ -11,189 +11,170 @@ Created on Sat Aug  7 09:51:40 2021
 
 
 """
-#библиотеки
+# библиотеки
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as st
+from sklearn.utils import resample
+from sklearn.neighbors import KernelDensity  # используем класс из sklearn
 
 
-
-#import Bootstrep as bs
-
-
-def max_min(a, b, mu = 0):
+def max_min(a, b, mu=0):
     min_b = min(a)
     min_a = min(b)
     max_b = max(b)
     max_a = max(a)
     if mu == 0:
         if max_b < max_a:
-            if min_b < min_a: 
+            if min_b < min_a:
                 return max_a * 1.0001, min_b * 0.999
-            else: 
+            else:
                 return max_a * 1.0001, min_a * 0.999
         else:
-            if min_b < min_a: 
+            if min_b < min_a:
                 return max_b * 1.0001, min_b * 0.999
-            else: 
+            else:
                 return max_b * 1.0001, min_a * 0.999
     else:
-        dia = mu/15
+        dia = mu / 15
         if max_b < max_a:
-            if min_b < min_a: 
+            if min_b < min_a:
                 return max_a + dia, min_b - dia
-            else: 
+            else:
                 return max_a + dia, min_a - dia
         else:
-            if min_b < min_a: 
+            if min_b < min_a:
                 return max_b + dia, min_b - dia
-            else: 
+            else:
                 return max_b + dia, min_a - dia
-        
 
 
-        
-    
-
-
-#основа рондома
-Start_random_seed = 990 #997  (0.015) 995 (0.029) 990(0.057)
+# основа рандома
+Start_random_seed = 990  # 997  (0.015) 995 (0.029) 990(0.057)
 np.random.seed(Start_random_seed)
 
-#размеры выборок
-n_size_A=180
-n_size_B=30
-n_size_Result=1000
+# размеры выборок
+n_size_A = 180
+n_size_B = 30
+n_size_Result = 1000
 n_size_Result_all = n_size_A + n_size_B
 
-#интервалы и важные параметры
-#m = np.random.randint(20, 1000)
+# интервалы и важные параметры
+# m = np.random.randint(20, 1000)
 
-mu1=382#50#
-dia = mu1/15                                                                        #mu1=50
-SKO1=0.006*mu1#0.008*mu1##*m#0.3#
+mu1 = 382  # 50#
+dia = mu1 / 15  # mu1=50
+SKO1 = 0.006 * mu1  # 0.008*mu1##*m#0.3#
 persent = 1.002
 A = np.zeros([n_size_A])
 B = np.zeros([n_size_B])
-Confidence_Interval=np.random.randint(85, 95)
-Confidence_Interval=85  
-Confidence_Interval_New=30
-Left_border_Conf_Inter=(100-Confidence_Interval)/2
-Right_border_Conf_Inter=Confidence_Interval + Left_border_Conf_Inter
+Confidence_Interval = np.random.randint(85, 95)
+Confidence_Interval = 85
+Confidence_Interval_New = 30
+Left_border_Conf_Inter = (100 - Confidence_Interval) / 2
+Right_border_Conf_Inter = Confidence_Interval + Left_border_Conf_Inter
 
-#вывод важных параметров
-print("mu1=",mu1,"  SKO1=",SKO1)
-print("Left_border_Conf_Inter=",Left_border_Conf_Inter,"  Right_border_Conf_Inter=",Right_border_Conf_Inter)
+# вывод важных параметров
+print("mu1=", mu1, "  SKO1=", SKO1)
+print("Left_border_Conf_Inter=", Left_border_Conf_Inter, "  Right_border_Conf_Inter=", Right_border_Conf_Inter)
 
-#рандомизация исходных данных
-A[:]=np.random.normal(mu1, SKO1, n_size_A)
-B[:]=np.random.normal(mu1*0.002 + mu1, SKO1, n_size_B)
+# рандомизация исходных данных
+A[:] = np.random.normal(mu1, SKO1, n_size_A)
+B[:] = np.random.normal(mu1 * 0.002 + mu1, SKO1, n_size_B)
 
-max1, min1 = max_min(A,B)
+max1, min1 = max_min(A, B)
 
+Result_All = np.concatenate([A, B])
+print(len(A), "\t", len(B), "\t", len(Result_All))
 
-Result_All = np.concatenate([A,B])
-print(len(A),"\t",len(B),"\t",len(Result_All))
-
-#подсчет средних от данных
-mean_estimate_before=np.mean(A[:]) #?
-mean_estimate_after=np.mean(B[:])
+# подсчет средних от данных
+mean_estimate_before = np.mean(A[:])  # ?
+mean_estimate_after = np.mean(B[:])
 mean = mean_estimate_after - mean_estimate_before
-print("before",mean_estimate_before,"\n","after",mean_estimate_after)
+print("before", mean_estimate_before, "\n", "after", mean_estimate_after)
 print(mean)
-#оценка стандартного отклонения (зачем нужно?)
-standart_deviation_estimate_before=np.std(A[:])
-standart_deviation_estimate_after=np.std(B[:])
+# оценка стандартного отклонения (зачем нужно?)
+standart_deviation_estimate_before = np.std(A[:])
+standart_deviation_estimate_after = np.std(B[:])
 
-#инициализация массивов для выборки
+# инициализация массивов для выборки
 average_value_bootstrep_before = np.zeros([n_size_Result])
 average_value_bootstrep_after = np.zeros([n_size_Result])
 
-from sklearn.utils import resample
 Delta = np.zeros([1000])
 
-#бутстреп для 180+30
+# бутстреп для 180+30
 
-#дельта будстрепа
+# дельта будстрепа
 for i in range(1000):
-    Result_All = resample(Result_All[:], replace=False )
+    Result_All = resample(Result_All[:], replace=False)
     Result_All_Before, Result_All_After = Result_All[:n_size_A], Result_All[n_size_A:]
     Delta[i] = np.mean(Result_All_After) - np.mean(Result_All_Before)
 
-
-
-#бутстреп
+# бутстреп
 for i in range(1000):
-    boot = resample(A[:], #Список c исходной выборкой
+    boot = resample(A[:],  # Список c исходной выборкой
                     replace=True,  # Если ” True”, то случайная выборка с возвратом элемент 
                     n_samples=180
                     )
     average_value_bootstrep_before[i] = np.mean(boot[:])
-    boot = resample(B[:], #Список c исходной выборкой
+    boot = resample(B[:],  # Список c исходной выборкой
                     replace=True,  # Если ” True”, то случайная выборка с возвратом элемент 
                     n_samples=30
                     )
     average_value_bootstrep_after[i] = np.mean(boot[:])
-    #Delta[i] = np.mean(average_value_bootstrep_after) - np.mean(average_value_bootstrep_before) 
-    
-mean_estimate_before_boot=np.mean(average_value_bootstrep_before[:]) #?
-mean_estimate_after_boot=np.mean(average_value_bootstrep_after[:])
-    
-#************************************************************************
-#%% = Начало Блока.  Если блок Выделить, то его можно выполнить Ctrl + Enter
+    # Delta[i] = np.mean(average_value_bootstrep_after) - np.mean(average_value_bootstrep_before)
 
-#chr(171) - кавычки открываются 
-#chr(187) - кавычки закрываются
-#chr(32)  - пробел
-#chr(945) - Alfa
-#chr(946) - Betta
-#chr(916) - Delta
-#chr(956) - mu
-#chr(963) - sigma
+mean_estimate_before_boot = np.mean(average_value_bootstrep_before[:])  # ?
+mean_estimate_after_boot = np.mean(average_value_bootstrep_after[:])
 
+# ************************************************************************
+# %% = Начало Блока.  Если блок Выделить, то его можно выполнить Ctrl + Enter
 
-colors = ['']*15
-
-colors[0]  ='b' #Синий
-colors[1]  ='g' #Зелёный
-colors[2]  ='r' #Красный
-colors[3]  ='с' #Бирюзовый
-colors[4]  ='b' #Фиолетовый / Пурпурный
-colors[5]  ='y' #Желтый
-colors[6]  ='k' #Черный
-colors[7]  ='w' #Белый
-colors[8]  ='goldenrod' # См. Полную Таблицу Цветов в Mathplotlib
-colors[9]  ='grey' #Серый
-colors[10] ='magenta' #Пурпурно-Красный
-colors[11] ='floralwhite' #См. Полную Таблицу Цветов в Mathplotlib
-colors[12] ='skyblue' #См. Полную Таблицу Цветов в Mathplotlib
-colors[13] ='orangered'
-colors[14] ='tomato'
+# chr(171) - кавычки открываются
+# chr(187) - кавычки закрываются
+# chr(32)  - пробел
+# chr(945) - Alfa
+# chr(946) - Betta
+# chr(916) - Delta
+# chr(956) - mu
+# chr(963) - sigma
 
 
+colors = [''] * 15
 
-
+colors[0] = 'b'  # Синий
+colors[1] = 'g'  # Зелёный
+colors[2] = 'r'  # Красный
+colors[3] = 'с'  # Бирюзовый
+colors[4] = 'b'  # Фиолетовый / Пурпурный
+colors[5] = 'y'  # Желтый
+colors[6] = 'k'  # Черный
+colors[7] = 'w'  # Белый
+colors[8] = 'goldenrod'  # См. Полную Таблицу Цветов в Mathplotlib
+colors[9] = 'grey'  # Серый
+colors[10] = 'magenta'  # Пурпурно-Красный
+colors[11] = 'floralwhite'  # См. Полную Таблицу Цветов в Mathplotlib
+colors[12] = 'skyblue'  # См. Полную Таблицу Цветов в Mathplotlib
+colors[13] = 'orangered'
+colors[14] = 'tomato'
 
 print("\n\n\n")
 
-#******************************************************************************
+# ******************************************************************************
 #    pass
-
-
 
 
 fig, (ax3) = plt.subplots(1, 1, figsize=(12, 4))
 plt.subplot(1, 1, 1)
 
-#fig, (ax1,ax2,ax3) = plt.subplots(3, 1, figsize=(12, 18))
-#plt.subplot(3, 1, 1)
-#ax1.set_facecolor(colors[11])
-#ax2.set_facecolor(colors[11])
+# fig, (ax1,ax2,ax3) = plt.subplots(3, 1, figsize=(12, 18))
+# plt.subplot(3, 1, 1)
+# ax1.set_facecolor(colors[11])
+# ax2.set_facecolor(colors[11])
 ax3.set_facecolor(colors[11])
 
- 
-
-#prop = dict(alpha=1, lw=2, ls='-', edgecolor='black', facecolor='lightblue', zorder=0)
+# prop = dict(alpha=1, lw=2, ls='-', edgecolor='black', facecolor='lightblue', zorder=0)
 # "prob" - - параметры графика гистограммы - слой= 0
 #          alpha - полупрозрачность
 #          lw - ширирина линии
@@ -203,13 +184,10 @@ ax3.set_facecolor(colors[11])
 #          zorder - это нулевой слой на графики 
 
 
-#  hist - переменная, которая не используется ax1.hist  - это уже метод hist, который изменяет ax1 (то есть в ax1 добавляет
-#                                                                гистограмму)
-#  ax1 -  переменная, в которой находится гистограмма  
-#   distr - исходная выборка
-#   bins -количество карманов гистограммы
-#   density=True - площадь столбцов = 1
-#   prop - словаррь, где хранятся параметры гистограммы - см. выше
+# hist - переменная, которая не используется ax1.hist  - это уже метод hist, который изменяет ax1 (то есть в ax1
+# добавляет гистограмму) ax1 - переменная, в которой находится гистограмма distr - исходная выборка bins -количество
+# карманов гистограммы density=True - площадь столбцов = 1 prop - словарь, где хранятся параметры гистограммы - см.
+# выше
 
 
 labels_before = ["Эксп. данные до"]
@@ -217,45 +195,40 @@ labels_after = ["Эксп. данные после"]
 
 labels1 = ["Средние знач."]
 
-
 text_before = [f'{mean_estimate_before: .2f}']  # $ - переход на нижний регистр. $ - возврат в средний регистр
-      
+
 text_after = [f'{mean_estimate_after: .2f};']  # $ - переход на нижний регистр. $ - возврат в средний регистр
-   
 
-kde_parametrs = [1] # подбирают вручную. Этот параметр убирает волнообразность
-                       #Обратно к Высоте Огибающей
-kde_linspace = np.zeros([1,2])   
-kde_linspace[0,:]=[min1,max1] # Диапазон, в котором стороится 1-я Огибающая   
+kde_parametrs = [1]  # Подбирают вручную. Этот параметр убирает волнообразность
+# Обратно к Высоте Огибающей
+kde_linespace = np.zeros([1, 2])
+kde_linespace[0, :] = [min1, max1]  # Диапазон, в котором стороится 1-я Огибающая
 
-vline_before=np.zeros([1])
-vline_after=np.zeros([1])
-vline_before[0]=mean_estimate_before  # mu (=Сред.) для 1-вой выборки
-vline_after[0]=mean_estimate_after       
+vline_before = np.zeros([1])
+vline_after = np.zeros([1])
+vline_before[0] = mean_estimate_before  # mu (=Сред.) для 1-вой выборки
+vline_after[0] = mean_estimate_after
 
-from sklearn.neighbors import KernelDensity # используем класс из sklearn
+prop_before = dict(  # Параметры Отрисовки Гистограммы
+    alpha=1.0,  # Прозрачность
+    linewidth=2,  # Толщина линии прямоугольников
+    linestyle='-',  # Стиль Линии
+    edgecolor='black',  # Цвет Линии
+    facecolor=colors[12],  # Цвет заливки прямоугольников Гистограммы
+)
 
-   
-prop_before = dict( # Параметры Отрисовки Гистограммы
-                alpha=1.0, # Прозрачность
-                linewidth=2,      # Толщина линии Прямоуольников
-                linestyle='-',    # Стиль Линии                
-                edgecolor='black', # Цвет Линии
-                facecolor=colors[12], # Цвет заливки Прямогольников Гистограммы
-                ) 
+prop_after = dict(  # Параметры Отрисовки Гистограммы
+    alpha=1.0,  # Прозрачность
+    linewidth=2,  # Толщина линии прямоугольников
+    linestyle='-',  # Стиль Линии
+    edgecolor='black',  # Цвет Линии
+    facecolor="tomato",  # Цвет заливки прямоугольников Гистограммы
+)
 
-prop_after = dict( # Параметры Отрисовки Гистограммы
-                alpha=1.0, # Прозрачность
-                linewidth=2,      # Толщина линии Прямоуольников
-                linestyle='-',    # Стиль Линии                
-                edgecolor='black', # Цвет Линии
-                facecolor="tomato", # Цвет заливки Прямогольников Гистограммы
-                ) 
+distr_before = A[:]  # "distr" = 1D массив, в котором данные для построения Гистограммы
+distr_after = B[:]
 
-distr_before=A[:] # "distr" = 1D массив, в котором данные для построения Гистограммы
-distr_after=B[:]
-
-xx1 = np.linspace(*kde_linspace[0,:], 200) # См. след. строку
+xx1 = np.linspace(*kde_linespace[0, :], 200)  # См. след. строку
 """
 kde = KernelDensity(bandwidth=kde_parametrs[0])  #Обратно к Высоте Огибающей !!!
 kde.fit(distr_before[:,None])  # Подгонка Огибающей
@@ -450,7 +423,7 @@ ax1.legend(loc="upper right",  fontsize=12)
 
 ax1.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
 """
-#******************************************************************************
+# ******************************************************************************
 """
 kde_parametrs1 = [0.15]
 distr1_before=average_value_bootstrep_before[:] # "distr" = 1D массив, в котором данные для построения Гистограммы
@@ -529,75 +502,67 @@ ax2.legend(loc="upper right",  fontsize=12)
 
 ax2.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
 """
-#%%
+# %%
 labels_all = ["Разность средних"]
 kde_parametrs1 = [0.1]
-distr_delta=Delta[:] # "distr" = 1D массив, в котором данные для построения Гистограммы
+distr_delta = Delta[:]  # "distr" = 1D массив, в котором данные для построения Гистограммы
 
-kde_linspace1 = np.zeros([1,2])
-kde_linspace1[0,:]=[min(Delta)*1.3,max(Delta)*1.3]
-kde_linspace2 = np.zeros([1,2])
-kde_linspace2[0,:]=[mean,max(Delta)*1.3]
+kde_linspace1 = np.zeros([1, 2])
+kde_linspace1[0, :] = [min(Delta) * 1.3, max(Delta) * 1.3]
+kde_linspace2 = np.zeros([1, 2])
+kde_linspace2[0, :] = [mean, max(Delta) * 1.3]
 
-xx3_ = np.linspace(*kde_linspace2[0,:], 1000) # См. след. строку
-xx3 = np.linspace(*kde_linspace1[0,:], 1000) # См. след. строку
+xx3_ = np.linspace(*kde_linspace2[0, :], 1000)  # См. след. строку
+xx3 = np.linspace(*kde_linspace1[0, :], 1000)  # См. след. строку
 
+kde3 = KernelDensity(bandwidth=kde_parametrs1[0])  # Обратно к Высоте Огибающей !!!
+kde3.fit(distr_delta[:, None])  # Подгонка Огибающей
 
-kde3 = KernelDensity(bandwidth=kde_parametrs1[0])  #Обратно к Высоте Огибающей !!!
-kde3.fit(distr_delta[:,None])  # Подгонка Огибающей
+logprobes = kde3.score_samples(xx3[:, None])  # Огибающая строиться почему-то в логарифмах,
+logprobes_ = kde3.score_samples(xx3_[:, None])
+ax3.plot(xx3, np.exp(logprobes), lw=4, c='navy')  # Рисуем Огибающую (поэтому при рисовании делаем потенциирование)
+ax3.plot(xx3_, np.exp(logprobes_), lw=4, c="darkred")
 
-logprobes = kde3.score_samples(xx3[:,None])  # Огибающая стороится почему-то в логарифмах,
-logprobes_ = kde3.score_samples(xx3_[:,None])
-ax3.plot(xx3,np.exp(logprobes), lw=4, c='navy') # Рисуем Огибающую (поэтому при рисовании делаем потенциирование)
-ax3.plot(xx3_,np.exp(logprobes_), lw=4, c="darkred")
-
-
-        
-l = len(np.exp(logprobes_))
-#for i in range(l):
+# l = len(np.exp(logprobes_))
+# for i in range(l):
 #    print("%0.4f"%np.exp(logprobes_)[i],"\n")
-    
-N = ax3.hist(  # Рассчитываем и рисуем Гистограмму
-            distr_delta, # 1D массив с эксперим. данными
-            bins=20, # Кол-во частотных диапазонов (Карманов)
-            label=labels_all[0], # Попись рядом с цветом в Легенде
-            density=True,    # Гистограмма в виде Плотности Вероятности (S==1)
-            **prop_before) # см. "prop" выше
 
-#обработка переменных для их спользования в дальнейшем для диномического графика
+N = ax3.hist(  # Рассчитываем и рисуем Гистограмму
+    distr_delta,  # 1D массив с экспериментальными данными
+    bins=20,  # Кол-во частотных диапазонов (Карманов)
+    label=labels_all[0],  # Подпись рядом с цветом в Легенде
+    density=True,  # Гистограмма в виде Плотности Вероятности (S==1)
+    **prop_before)  # см. "prop" выше
+
+# обработка переменных для их использования в дальнейшем для динамического графика
 max_g1 = N[0].max() * 1.6
 
+# Другйо способ нахождения площади
+p_level = (100 - st.percentileofscore(distr_delta, mean)) / 100
 
-#Другйо способ нахождения площади
-p_level=(100-st.percentileofscore(distr_delta,mean)) / 100
+ax3.vlines(  # Рисуем вертикаль. линии, соответствующую 5% перцентилю (то есть
+    # 5% значений (то есть ШТУК) лежат меньше этой величины)
+    mean,  # координата по "x"
+    0, max_g1,  # Начало и Конец пр. "Y"
+    colors="darkred",  # Цвет Линии
+    linewidth=2.5,  # Толщина линии
+    linestyles='--')  # Стиль Линии
 
+ax3.vlines(  # рисуем верикаль. линии, соотвествующую 5% Пёрцентили (то есть
+    # 5% значений (то есть ШТУК) лежат меньше этой величины)
+    0,  # координата по "x"
+    0, max_g1,  # Начало и Конец пр "Y"
+    colors=colors[6],  # Цвет Линии
+    linewidth=2,  # Толщина линии
+    linestyles='-')  # Стиль Линии
 
-
-
-ax3.vlines ( # рисуем верикаль. линии, соотвествующую 5% Пёрцентили (то есть 
-                                                # 5% значений (то есть ШТУК) лежат меньше этой величины)
-        mean, # координата по "x"
-        0, max_g1,   # Начало и Конец пр "Y"
-        colors="darkred", # Цвет Линии
-        linewidth=2.5,   # Толщина линии
-        linestyles='--')  # Стиль Линии 
-
-ax3.vlines ( # рисуем верикаль. линии, соотвествующую 5% Пёрцентили (то есть 
-                                                # 5% значений (то есть ШТУК) лежат меньше этой величины)
-        0, # координата по "x"
-        0, max_g1,   # Начало и Конец пр "Y"
-        colors=colors[6], # Цвет Линии
-        linewidth=2,   # Толщина линии
-        linestyles='-')  # Стиль Линии
-
-ax3.fill_between(xx3_, np.exp(logprobes_),color='red', alpha  = 0.3)
-
+ax3.fill_between(xx3_, np.exp(logprobes_), color='red', alpha=0.3)
 
 #
 n0 = 0
 nn = 0
 bo = True
-#print("Полезные y:")
+# print("Полезные y:")
 for i in range(len(np.exp(logprobes))):
     if round(np.exp(logprobes)[i], 4) != 0.:
         nn += 1
@@ -605,20 +570,18 @@ for i in range(len(np.exp(logprobes))):
     elif bo:
         n0 += 1
 
-        
-mat = np.zeros(nn) 
+mat = np.zeros(nn)
 
-for i in range(n0 + nn):#nn):#
+for i in range(n0 + nn):  # nn):#
     if i > n0:
-        mat[i - n0] = round(np.exp(logprobes)[i],4)
-        #print(mat[i - n0],end = " ")
-
+        mat[i - n0] = round(np.exp(logprobes)[i], 4)
+        # print(mat[i - n0],end = " ")
 
 n = max(Delta) - min(Delta)
-print("Всего полезных элементов:",nn,"\nДлина полезная:", n)
+print("Всего полезных элементов:", nn, "\nДлина полезная:", n)
 
-area = np.trapz(mat, dx = n / nn)
-print("Вся площадь:",area)
+area = np.trapz(mat, dx=n / nn)
+print("Вся площадь:", area)
 
 """
 norm_rv = st.norm(loc=distr_delta.mean(), scale=distr_delta.std())
@@ -630,92 +593,85 @@ nn = 0
 for i in range(len(np.exp(logprobes_))):
     if round(np.exp(logprobes_)[i], 4) != 0.:
         nn += 1
-        
-mat = np.zeros(nn) 
+
+mat = np.zeros(nn)
 
 for i in range(nn):
-    mat[i] = round(np.exp(logprobes_)[i],4)
+    mat[i] = round(np.exp(logprobes_)[i], 4)
 
-#print("Полезные y:")
-l = len(mat)
-#for i in range(l):
+# print("Полезные y:")
+# l = len(mat)
+# for i in range(l):
 #    print("%0.4f"%mat[i],end = " ")
 
-print("\nДлина mat: ",len(mat) )
+print("\nДлина mat: ", len(mat))
 
 n = max(Delta) - mean
-print("Всего полезных элементов:",nn,"\nДлина полезная:", n)
+print("Всего полезных элементов:", nn, "\nДлина полезная:", n)
 
-area = np.trapz(mat, dx = n / nn)
+area = np.trapz(mat, dx=n / nn)
 
+ax3.text(  # Подпись Вертикаль. Линий
+    max(Delta) * 0.7,  # "X" координата начала подписи
+    y=max_g1 * 0.5,  # "Y" координата начала подписи
+    s='Площадь под\nграфиком: %.3f' % area,  # Текст Подписи Вертикальной Линии
+    fontsize=14)
 
-ax3.text ( # Подпись Вертикаль. Линий
-        max(Delta)*0.7, # "X" координата начала подписи
-        y=max_g1*0.5,          # "Y" координата начала подписи
-        s='Площадь под\nграфиком: %.3f'%area,      # Текст Подписи Вертикальной Линии
-        fontsize=14) 
+ax3.set_ylim(0, max_g1)
+ax3.set_xlim(min(Delta) * 1.3, max(Delta) * 1.3)
 
-ax3.set_ylim(0,max_g1)
-ax3.set_xlim(min(Delta)*1.3,max(Delta)*1.3)
+ax3.set_xlabel('Разность средних', fontsize=16)  # Подпись под рисунком - ось "X"
+ax3.set_ylabel('Плотность вероятности', fontsize=16)  # Подпись осb "Y"
+ax3.set_title("Распределение разность средних", fontsize=16)  # # Подпись над рисунком
 
-ax3.set_xlabel('Разность средних', fontsize=16) # Подпись под рисунком - ось "X"
-ax3.set_ylabel('Плотность вероятности', fontsize=16) # Подпись осb "Y"
-ax3.set_title("Распределение разность средних", fontsize=16) # # Подпись над рисунком 
+ax3.legend(loc="upper right", fontsize=12)
 
-ax3.legend(loc="upper right",  fontsize=12)
+ax3.grid(True, ls=':', c=colors[6], alpha=0.3, zorder=0)
 
-ax3.grid(True, ls=':', c=colors[6],alpha=0.3, zorder=0 )
-
-
-
-print("Средние:\n",np.mean(A),"\n",np.mean(average_value_bootstrep_before),"\n",
-      np.mean(B),"\n",np.mean(average_value_bootstrep_after))
-##%% == Конец Блока
-print("Площадь: ",area)
+print("Средние:\n", np.mean(A), "\n", np.mean(average_value_bootstrep_before), "\n",
+      np.mean(B), "\n", np.mean(average_value_bootstrep_after))
+# %% == Конец Блока
+print("Площадь: ", area)
 norm_rv = st.norm(loc=distr_delta.mean(), scale=distr_delta.std())
 p = 1 - norm_rv.cdf(mean)
 
-print("\n\nНахождение площади через scipy.stats:",p_level)
+print("\n\nНахождение площади через scipy.stats:", p_level)
 print("Нахождение площади дубовым методом", area)
-print("Ещё некая площадь:",p)
+print("Ещё некая площадь:", p)
 
+# ******************************************************************************
 
-#******************************************************************************
+n_size_Effect = 1000  # Размер массива Effect
+Effect = np.zeros([n_size_Effect])  # Объявляем массив
 
-n_size_Effect=1000 # Размер массива Effect
-Effect = np.zeros([n_size_Effect]) # Объявляем массив
+A_i = np.zeros([n_size_A])  # Объявляем массив
+B_i = np.zeros([n_size_B])  # Объявляем массив
 
-A_i = np.zeros([n_size_A]) # Объявляем массив
-B_i = np.zeros([n_size_B]) # Объявляем массив
+for i in range(n_size_Effect):  # цикл
+    A_i = resample(A, replace=True)  # делаем бутстреп "повтор" массива А
+    B_i = resample(B, replace=True)  # делаем бутстреп "повтор" массива B
+    Effect[i] = 100 * (np.mean(B_i) - np.mean(A_i[:])) / np.mean(A_i[:])  # получаем массив
 
-for i in range(n_size_Effect): # цикл
-    A_i = resample(A, replace=True)              # делаем бутстреп "повтор" массива А
-    B_i = resample(B, replace=True)              # делаем бутстреп "повтор" массива B
-    Effect[i] = 100* (np.mean(B_i) - np.mean(A_i[:])) / np.mean(A_i[:])     # получаем массив
+# ******************************************************************************
+Alfa = 0.1
+Delta_Critich = np.percentile(Delta, 100 - Alfa * 100)
 
-#******************************************************************************
-Alfa=0.1
-Delta_Critich=np.percentile(Delta,100-Alfa*100)
+n_size_Metrics_in_effect = 1000  # Размер массива Effect
+Metrics_in_effect = np.zeros([n_size_Metrics_in_effect])  # Объявляем массив
 
-n_size_Metrics_in_effect=1000 # Размер массива Effect
-Metrics_in_effect = np.zeros([n_size_Metrics_in_effect]) # Объявляем массив
+A_i = np.zeros([n_size_A])  # Объявляем массив
+B_i = np.zeros([n_size_B])  # Объявляем массив
 
-A_i = np.zeros([n_size_A]) # Объявляем массив
-B_i = np.zeros([n_size_B]) # Объявляем массив
+for i in range(n_size_Metrics_in_effect):  # цикл
 
+    A_i = resample(A, replace=True)  # делаем бутстреп "повтор" массива А
+    B_i = resample(B, replace=True)  # делаем бутстреп "повтор" массива B
 
-for i in range(n_size_Metrics_in_effect): # цикл
+    Metrics_in_effect[i] = np.mean(B_i) - np.mean(A_i[:])  # получаем массив эффектов
 
-    A_i = resample(A, replace=True) # делаем бутстреп "повтор" массива А
-    B_i = resample(B, replace=True) # делаем бутстреп "повтор" массива B
-    
-    Metrics_in_effect[i]=np.mean(B_i) - np.mean(A_i[:])# получаем массив эффектов
+Betta = (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
 
-
-Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
-
-
-#******************************************************************************
+# ******************************************************************************
 """
 присутствие name в __init__ вприводит к тому что при второй и последуйщей гистограме
 она будет иметь такую же легенду что и первая гистограма
@@ -723,9 +679,11 @@ Betta =  (Metrics_in_effect < Delta_Critich).sum() / n_size_Effect
     перенести параметр в plot_hist и там создавать легенду
 
 """
-#******************************************************************************
-class Ploter():
-    def __init__(self,*distr):
+
+
+# ******************************************************************************
+class Ploter:
+    def __init__(self):
         """Инициализация
         
             
@@ -736,19 +694,18 @@ class Ploter():
             ax,
             prop
         """
-        #self.distr = distr
+        # self.distr = distr
         self.fig, self.ax = plt.subplots(figsize=(12, 4))
-        #self.ax.set_facecolor(colors[2])
-        #print("Hello World, " + self.name)      
-        self.prop = dict( # Параметры Отрисовки Гистограммы
-                        alpha=1.0, # Прозрачность
-                        linewidth=2,      # Толщина линии Прямоуольников
-                        linestyle='-',    # Стиль Линии                
-                        edgecolor='black', # Цвет Линии
-                        facecolor=colors[12])
-        
-        
-    def plot_hist(self, distr,bins,label):
+        # self.ax.set_facecolor(colors[2])
+        # print("Hello World, " + self.name)
+        self.prop = dict(  # Параметры Отрисовки Гистограммы
+            alpha=1.0,  # Прозрачность
+            linewidth=2,  # Толщина линии Прямоугольников
+            linestyle='-',  # Стиль Линии
+            edgecolor='black',  # Цвет Линии
+            facecolor=colors[12])
+
+    def plot_hist(self, distr, bins, label):
         """
         Рисует гистограмму
 
@@ -760,17 +717,16 @@ class Ploter():
         """
         self.distr = distr
         self.middle = np.mean(self.distr[:])
-        Set = self.ax.hist(self.distr, 
-                    bins,
-                    label=label,
-                    density=True,
-                    **self.prop) 
-        self.max_y = Set[0].max() * 1.5
-        self.ax.legend(loc="upper right",  fontsize=12)
-        #print(Set[0].max() * 1.5)
+        set = self.ax.hist(self.distr,
+                           bins,
+                           label=label,
+                           density=True,
+                           **self.prop)
+        self.max_y = set[0].max() * 1.5
+        self.ax.legend(loc="upper right", fontsize=12)
+        # print(Set[0].max() * 1.5)
 
-
-    def plot_kde(self,kde_parametrs, steps = 1000, left = None, right = None):
+    def plot_kde(self, kde_parametrs, steps=1000, left=None, right=None):
         """
         Рисуется огибающая и объявляются переменные
 
@@ -780,112 +736,97 @@ class Ploter():
         steps : количестов точек по которой строится кривая.
         left : левый край.
         right : правый край.
-
-        middle :середина гистограммы
-        
         """
-        kde_linspace = np.zeros([1,2])
+        kde_linespace = np.zeros([1, 2])
         if left is None:
-            left = min(self.distr)*1.3 - self.middle*0.3
+            left = min(self.distr) * 1.3 - self.middle * 0.3
         if right is None:
-            right = max(self.distr)*1.3 + self.middle*0.3
-        kde_linspace[0,:]=[left, right]
-        self.x = np.linspace(*kde_linspace[0,:], steps)
+            right = max(self.distr) * 1.3 + self.middle * 0.3
+        kde_linespace[0, :] = [left, right]
+        self.x = np.linspace(*kde_linespace[0, :], steps)
         self.kde = KernelDensity(bandwidth=kde_parametrs)
-        self.kde.fit(self.distr[:,None])
-        self.logprobes = self.kde.score_samples(self.x[:,None])
-        self.ax.plot(self.x,np.exp(self.logprobes), lw=4, c='navy')
-        
-    
+        self.kde.fit(self.distr[:, None])
+        self.logprobes = self.kde.score_samples(self.x[:, None])
+        self.ax.plot(self.x, np.exp(self.logprobes), lw=4, c='navy')
+
     def plot_middle(self):
-        """Рисует прямую описывающую серезину гистограммы"""
+        """Рисует прямую описывающую середину гистограммы"""
         self.plot_line(self.middle)
-        
-       
-    def _fill_between(self,mean,bool_left = False):
-        """Закрытый; Закрышивает часть под кривой, и меняет цвет части этой прямой"""
-        kde_linspace = np.zeros([1,2])
-        if bool_left == False:
-            kde_linspace[0,:]=[mean,max(self.distr)*1.3]
+
+    def _fill_between(self, mean, bool_left=False):
+        """Закрытый; закрашивает часть под кривой, и меняет цвет части этой прямой"""
+        kde_linespace = np.zeros([1, 2])
+        if not bool_left:
+            kde_linespace[0, :] = [mean, max(self.distr) * 1.3]
         else:
-            kde_linspace[0,:]=[min(self.distr)*1.3,mean]
-        _x = np.linspace(*kde_linspace[0,:], 1000)
-        logprobes = self.kde.score_samples(_x[:,None])
-        self.ax.plot(_x,np.exp(logprobes), lw=4, c="darkred")
-        self.ax.fill_between(_x, np.exp(logprobes),color='red', alpha  = 0.3)
-        
-       
-    def plot_line(self, x_coor,linestyles = "-",colors = "k",linewidth=2):
+            kde_linespace[0, :] = [min(self.distr) * 1.3, mean]
+        _x = np.linspace(*kde_linespace[0, :], 1000)
+        logprobes = self.kde.score_samples(_x[:, None])
+        self.ax.plot(_x, np.exp(logprobes), lw=4, c="darkred")
+        self.ax.fill_between(_x, np.exp(logprobes), color='red', alpha=0.3)
+
+    def plot_line(self, x_coor, linestyles="-", colors="k", linewidth=2):
         """Рисует вертикальную прямую"""
-        self.ax.vlines (x_coor, # координата по "x"
-                0, self.max_y,   # Начало и Конец пр "Y"
-                colors = colors, # Цвет Линии
-                linewidth = linewidth,   # Толщина линии
-                linestyles = linestyles)  # Стиль Линии 
-        
-        
+        self.ax.vlines(x_coor,  # координата по "x"
+                       0, self.max_y,  # Начало и Конец пр "Y"
+                       colors=colors,  # Цвет Линии
+                       linewidth=linewidth,  # Толщина линии
+                       linestyles=linestyles)  # Стиль Линии
+
     def plot_p_level(self, mean):
-        """Рисует plevel"""
-        self.plot_line(mean,"--","darkred", 3)
+        """Рисует p-level"""
+        self.plot_line(mean, "--", "darkred", 3)
         self._fill_between(mean)
-        
-        
-    def set_facecolor(self,color = 'floralwhite'):
+
+    def set_facecolor(self, color='floralwhite'):
         """Добавляет цвет фона и фон сетки"""
         self.ax.set_facecolor(color)
-        self.ax.grid(True, ls='--', c='k',alpha=0.3)
-        
-        
-    def set_lim(self,left = None,right = None):
+        self.ax.grid(True, ls='--', c='k', alpha=0.3)
+
+    def set_lim(self, left=None, right=None):
         """Задаёт приделы графика"""
         if left is None:
-            left = min(self.distr)*1.3 - self.middle*0.3
+            left = min(self.distr) * 1.3 - self.middle * 0.3
         if right is None:
-            right = max(self.distr)*1.3 + self.middle*0.3
-        self.ax.set_ylim(0,self.max_y)
-        self.ax.set_xlim(left,right)
-        print(max(self.distr)*1.3 + self.middle*0.3)
-        print(left,"  ",right)
-        
-        
+            right = max(self.distr) * 1.3 + self.middle * 0.3
+        self.ax.set_ylim(0, self.max_y)
+        self.ax.set_xlim(left, right)
+        print(max(self.distr) * 1.3 + self.middle * 0.3)
+        print(left, "  ", right)
+
     def title(self, title):
         """Задаёт название графика"""
-        self.ax.set_title(title, fontsize=16) # # Подпись над рисунком 
-        
-        
+        self.ax.set_title(title, fontsize=16)  # # Подпись над рисунком
+
     def _find_p_level(self, mean):
-        return (100-st.percentileofscore(self.distr,mean)) / 100
-    
-    
-#    def _fine_left_or_right()
+        return (100 - st.percentileofscore(self.distr, mean)) / 100
 
-    
-    
-    def _plot_arrow(self,text,xtext, ytext,x,y,color = 'k'):
+    #    def _fine_left_or_right()
+
+    def _plot_arrow(self, text, xtext, ytext, x, y, color='k'):
         self.ax.annotate(text,
-            fontsize=14,
-            xy=(xtext, ytext),  # Левые координаты (x,y) линии
-            xytext=(x, y),   # Правые координаты (x,y) линии
-            arrowprops={'color': "darkred",'arrowstyle': '->', 'lw':2 } # Тип линии и её толщина
-            )
+                         fontsize=14,
+                         xy=(xtext, ytext),  # Левые координаты (x,y) линии
+                         xytext=(x, y),  # Правые координаты (x,y) линии
+                         arrowprops={'color': color, 'arrowstyle': '->', 'lw': 2}  # Тип линии и её толщина
+                         )
 
-        
-    #сделать возможность автоматизировать
-    def _plot_line_and_signature(self,mean,xtext,ytext,x,y):
-        self._plot_arrow(f"{round(self._find_p_level(mean), 5)}",xtext,ytext,x,y,"darkred")#f"{self._find_p_level(mean)}",self.distr*0.9,self.max_y*0.5,self.distr*0.8,self.max_y*0.3)
-        
-        
-    def set_labels(self,xlabel,ylabel):
+    # сделать возможность автоматизировать
+    def _plot_line_and_signature(self, mean, xtext, ytext, x, y):
+        self._plot_arrow(f"{round(self._find_p_level(mean), 5)}", xtext, ytext, x, y,
+                         "darkred")  # f"{self._find_p_level(mean)}",self.distr*0.9,self.max_y*0.5,self.distr*0.8,self.max_y*0.3)
+
+    def set_labels(self, xlabel, ylabel):
         self.ax.set_xlabel(xlabel, fontsize=16)
         self.ax.set_ylabel(ylabel, fontsize=16)
-        
-        
+
     def plot_mistake_one_line(self):
-        Alfa=0.1
-        Delta_Critich=np.percentile(Delta,100-Alfa*100)
-        self.plot_line(Delta_Critich,colors = 'yellow', linewidth = 4)
-        self._fill_between(Delta_Critich, True)
-        
+        alfa = 0.1
+        delta_critich = np.percentile(Delta, 100 - alfa * 100)
+        self.plot_line(delta_critich, colors='yellow', linewidth=4)
+        self._fill_between(delta_critich, True)
+
+
 a1 = Ploter()
 
 a1.plot_hist(distr_delta, 20, "Разность средних")
@@ -895,12 +836,12 @@ a1.plot_p_level(mean)
 a1.set_facecolor()
 a1.set_labels("Плотность вероятности", "Разность средних")
 a1.title("Распределение разности средних")
-#a1.plot_arrow("1111")
-#a1._plot_arrow("111",0.5,0.5,1,1,"darkred")
-#a1._plot_line_and_signature
-a1._plot_line_and_signature(mean,0.7,0.4,1,1)
+# a1.plot_arrow("1111")
+# a1._plot_arrow("111",0.5,0.5,1,1,"darkred")
+# a1._plot_line_and_signature
+a1._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
 a1.set_lim()
-#print(a1._find_p_level(mean),"--------------------")
+# print(a1._find_p_level(mean),"--------------------")
 
 
 a2 = Ploter()
@@ -910,148 +851,118 @@ a2.plot_kde(0.08)
 a2.set_lim()
 a2.plot_mistake_one_line()
 # продублировать график снизу
-Alfa=0.1
-Delta_Critich=np.percentile(Delta,100-Alfa*100)
-
+Alfa = 0.1
+Delta_Critich = np.percentile(Delta, 100 - Alfa * 100)
 
 print("\n\n\n")
 
-
-
 fig, (ax4) = plt.subplots(1, 1, figsize=(12, 5))
 plt.subplot(1, 1, 1)
-#ax1.set_facecolor(colors[11])
+# ax1.set_facecolor(colors[11])
 
-text = [chr(956)+'$_'+chr(916)+'$'+'$_{при}$'+ chr(32)+'$_{ОТКЛОНЕНИИ}$'+ chr(32)+'$_{ Н0}$ =', # $ - переход на нижний регистр. $ - возврат в средний регистр
+text = [chr(956) + '$_' + chr(916) + '$' + '$_{при}$' + chr(32) + '$_{ОТКЛОНЕНИИ}$' + chr(32) + '$_{ Н0}$ =',
+        # $ - переход на нижний регистр. $ - возврат в средний регистр
         'Граница ошибки 1-го рода']
 
 kde_parametrs1 = [0.1]
-distr_effect=Metrics_in_effect[:] # "distr" = 1D массив, в котором данные для построения Гистограммы
+distr_effect = Metrics_in_effect[:]  # "distr" = 1D массив, в котором данные для построения Гистограммы
 
-kde_linspace1 = np.zeros([1,2])
-kde_linspace1[0,:]=[min(distr_effect)*1.3,max(distr_effect)*1.3]
-kde_linspace2 = np.zeros([1,2])
-kde_linspace2[0,:]=[min(distr_effect)*1.3,Delta_Critich]
+kde_linspace1 = np.zeros([1, 2])
+kde_linspace1[0, :] = [min(distr_effect) * 1.3, max(distr_effect) * 1.3]
+kde_linspace2 = np.zeros([1, 2])
+kde_linspace2[0, :] = [min(distr_effect) * 1.3, Delta_Critich]
 
-xx4_ = np.linspace(*kde_linspace2[0,:], 1000) # См. след. строку
-xx4 = np.linspace(*kde_linspace1[0,:], 1000) # См. след. строку
+xx4_ = np.linspace(*kde_linspace2[0, :], 1000)  # См. след. строку
+xx4 = np.linspace(*kde_linspace1[0, :], 1000)  # См. след. строку
 
+kde4 = KernelDensity(bandwidth=kde_parametrs1[0])  # Обратно к Высоте Огибающей !!!
+kde4.fit(distr_effect[:, None])  # Подгонка Огибающей
 
-kde4 = KernelDensity(bandwidth=kde_parametrs1[0])  #Обратно к Высоте Огибающей !!!
-kde4.fit(distr_effect[:,None])  # Подгонка Огибающей
-
-logprobes = kde4.score_samples(xx4[:,None])  # Огибающая стороится почему-то в логарифмах,
-logprobes_ = kde4.score_samples(xx4_[:,None])
-ax4.plot(xx4,np.exp(logprobes), lw=4, c='navy') # Рисуем Огибающую (поэтому при рисовании делаем потенциирование)
-ax4.plot(xx4_,np.exp(logprobes_), lw=4, c="darkred")
-
+logprobes = kde4.score_samples(xx4[:, None])  # Огибающая стороится почему-то в логарифмах,
+logprobes_ = kde4.score_samples(xx4_[:, None])
+ax4.plot(xx4, np.exp(logprobes), lw=4, c='navy')  # Рисуем Огибающую (поэтому при рисовании делаем потенциирование)
+ax4.plot(xx4_, np.exp(logprobes_), lw=4, c="darkred")
 
 N = ax4.hist(  # Рассчитываем и рисуем Гистограмму
-            distr_effect, # 1D массив с эксперим. данными
-            bins=20, # Кол-во частотных диапазонов (Карманов)
-            label=labels_all[0], # Попись рядом с цветом в Легенде
-            density=True,    # Гистограмма в виде Плотности Вероятности (S==1)
-            **prop_before) # см. "prop" выше
+    distr_effect,  # 1D массив с эксперим. данными
+    bins=20,  # Кол-во частотных диапазонов (Карманов)
+    label=labels_all[0],  # Попись рядом с цветом в Легенде
+    density=True,  # Гистограмма в виде Плотности Вероятности (S==1)
+    **prop_before)  # см. "prop" выше
 
 max_g1 = N[0].max() * 1.6
 
+ax4.vlines(  # рисуем верикаль. линии, соотвествующую Среднему (mu2)
+    # линия=СРЕДНЕМУ
+    np.mean(Metrics_in_effect[:]),  # координата по "x"
+    0, max_g1,  # Начало и Конец пр "Y"
+    colors=colors[14],  # Цвет Линии
+    linewidth=2.5,  # Толщина линии
+    linestyles='--')  # Стиль Линии
 
-ax4.vlines ( # рисуем верикаль. линии, соотвествующую Среднему (mu2)
-        # линия=СРЕДНЕМУ
-        np.mean(Metrics_in_effect[:]), # координата по "x"
-        0, max_g1,   # Начало и Конец пр "Y"
-        colors=colors[14], # Цвет Линии
-        linewidth=2.5,   # Толщина линии
-        linestyles='--')  # Стиль Линии 
+ax4.vlines(  # рисуем верикаль. линии, соотвествующую  Значение Эффекта в  Пилот. Проекта
+    # линия = ГРАНИЦЕ Alfa
+    Delta_Critich,  # координата по "x"
+    0, max_g1,  # Начало и Конец пр "Y"
+    colors=colors[2],  # Цвет Линии
+    linewidth=4.5,  # Толщина линии
+    linestyles='-')  # Стиль Линии
 
-    
-ax4.vlines ( # рисуем верикаль. линии, соотвествующую  Значение Эффекта в  Пилот. Проекта
-        # линия = ГРАНИЦЕ Alfa   
-        Delta_Critich, # координата по "x"
-        0, max_g1,   # Начало и Конец пр "Y"
-        colors=colors[2], # Цвет Линии
-        linewidth=4.5,   # Толщина линии
-        linestyles='-')  # Стиль Линии 
+ax4.annotate("  =" + f'{Betta: .2f}', fontsize=18, xytext=(-0.09, max_g1 * 0.9),  # координаты надписи и Начала Стрелки
+             xy=(Delta_Critich - 0.04, max_g1 * 0.4),  # координаты окончания стрелки
+             color=colors[2],
+             arrowprops=dict(color=colors[6],  # рисуем кривую стрелку
+                             linewidth=2,
+                             arrowstyle='->',
+                             connectionstyle='angle3,' +  # управляющий параметр (могут быть разные стрелки - см.
+                                             # Примеры в InterNet
+                                             'angleA=195,' +  # Угол выхода из Началь. точки - А
+                                             'angleB=333'))  # Угол входа в конечную точку - В
 
-ax4.annotate("  =" +f'{Betta: .2f}', fontsize=18, xytext=(-0.09,max_g1*0.9),# координаты надписи и Начала Стрелки 
-                                          xy = (Delta_Critich-0.04, max_g1*0.4), # координаты окончания стрелки
-                color=colors[2],
-                arrowprops=dict(color=colors[6], # рисуем кривую стрелку
-                                linewidth=2,
-                                arrowstyle='->',
-                                connectionstyle='angle3,'+ # управляющий параметр(могут быть разные стрелки - см. Примеры в InterNet
-                                'angleA=195,'+ # Угол выхода из Началь. точки - А
-                                'angleB=333'))# Угол входа в конечную точку - В
+ax4.text(  # Подпись Вертикаль. Линий
+    x=Delta_Critich * 1.8,  # "X" координата начала подписи
+    y=max_g1 * 0.65,  # "Y" координата начала подписи
+    s="Граница ошибки 1-го рода",
+    c=colors[2],
+    fontsize=16)  # Размер шрифта
 
-ax4.text ( # Подпись Вертикаль. Линий
-        x=Delta_Critich*1.8, # "X" координата начала подписи
-        y=max_g1*0.65,          # "Y" координата начала подписи
-        s="Граница ошибки 1-го рода",
-         c=colors[2],
-        fontsize=16)    # Размер шрифта
+ax4.text(  # Подпись Вертикаль. Линий
+    x=Delta_Critich * 1.1,  # "X" координата начала подписи
+    y=max_g1 * 0.85,  # "Y" координата начала подписи
+    # s=chr(956)+'$_{}$'+f'={mean_estimate_B: .2f}', # $_ - переход на нижний регистр. $ - возврат в средний регистр
+    s=text[0],
+    c=colors[14],
+    fontsize=20)  # Размер шрифта
 
-ax4.text ( # Подпись Вертикаль. Линий
-        x=Delta_Critich*1.1, # "X" координата начала подписи
-        y=max_g1*0.85,          # "Y" координата начала подписи
-        #s=chr(956)+'$_{}$'+f'={mean_estimate_B: .2f}', # $_ - переход на нижний регистр. $ - возврат в средний регистр
-        s=text[0],
-        c=colors[14],
-        fontsize=20)    # Размер шрифта
+ax4.annotate("", fontsize=18, xytext=(Delta_Critich * 1.8, max_g1 * 0.65),  # координаты надписи и Начала Стрелки
+             xy=(Delta_Critich, max_g1 * 0.4),  # координаты окончания стрелки
+             color=colors[2],
+             arrowprops=dict(color=colors[2],  # рисуем кривую стрелку
+                             linewidth=2,
+                             arrowstyle='->',
+                             connectionstyle="angle3," +  # управляющий параметр (могут быть разные стрелки - см.
+                                             # Примеры в InterNet
+                                             "angleA=250," +  # Угол выхода из Началь. точки - А
+                                             "angleB=20"))  # Угол входа в конечную точку - В
 
-ax4.annotate("", fontsize=18, xytext=(Delta_Critich*1.8,max_g1*0.65),# координаты надписи и Начала Стрелки 
-                                          xy = (Delta_Critich, max_g1*0.4), # координаты окончания стрелки
-                color=colors[2],
-                arrowprops=dict(color=colors[2], # рисуем кривую стрелку
-                                linewidth=2,
-                                arrowstyle='->',
-                                connectionstyle="angle3,"+ # управляющий параметр(могут быть разные стрелки - см. Примеры в InterNet
-                                "angleA=250,"+ # Угол выхода из Началь. точки - А
-                                "angleB=20"))# Угол входа в конечную точку - В
+ax4.text(  # Подпись Вертикаль. Линий
+    x=Delta_Critich * 1.1,  # "X" координата начала подписи
+    y=max_g1 * 0.75,  # "Y" координата начала подписи
+    # s=chr(956)+'$_{}$'+f'={mean_estimate_B: .2f}', # $_ - переход на нижний регистр. $ - возврат в средний регистр
+    s='=' + f'{np.mean(Metrics_in_effect[:]): .3f}',
+    c=colors[14],
+    fontsize=20)  # Размер шрифта
 
-ax4.text ( # Подпись Вертикаль. Линий
-        x=Delta_Critich*1.1, # "X" координата начала подписи
-        y=max_g1*0.75,          # "Y" координата начала подписи
-        #s=chr(956)+'$_{}$'+f'={mean_estimate_B: .2f}', # $_ - переход на нижний регистр. $ - возврат в средний регистр
-        s='='+f'{np.mean(Metrics_in_effect[:]): .3f}' ,
-        c=colors[14],
-        fontsize=20)    # Размер шрифта
+ax4.fill_between(xx4_, np.exp(logprobes_), color='red', alpha=0.5)
+ax4.set_title("Распределение разность средних", fontsize=16)  # # Подпись над рисунком
 
-ax4.fill_between(xx4_, np.exp(logprobes_),color='red', alpha  = 0.5)
-ax4.set_title("Распределение разность средних", fontsize=16) # # Подпись над рисунком 
+ax4.legend(loc="upper right", fontsize=12)
 
-ax4.legend(loc="upper right",  fontsize=12)
-
-ax4.set_ylim(0,max_g1)
-ax4.set_xlim(min(distr_effect)*1.3,max(distr_effect)*1.1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ax4.set_ylim(0, max_g1)
+ax4.set_xlim(min(distr_effect) * 1.3, max(distr_effect) * 1.1)
 
 plt.show()
 
-#print("56  kde_parametrs=",kde_parametrs)
+# print("56  kde_parametrs=",kde_parametrs)
 
-#******************************************************************************
+# ******************************************************************************
