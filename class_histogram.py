@@ -738,11 +738,7 @@ class Ploter:
         right : правый край.
         """
         kde_linespace = np.zeros([1, 2])
-        if left is None:
-            left = min(self.distr) * 1.3 - self.middle * 0.3
-        if right is None:
-            right = max(self.distr) * 1.3 + self.middle * 0.3
-        kde_linespace[0, :] = [left, right]
+        kde_linespace[0, :] = [self.left_lim, self.right_lim]
         self.x = np.linspace(*kde_linespace[0, :], steps)
         self.kde = KernelDensity(bandwidth=kde_parametrs)
         self.kde.fit(self.distr[:, None])
@@ -777,6 +773,8 @@ class Ploter:
         """Рисует p-level"""
         self.plot_line(mean, "--", "darkred", 3)
         self._fill_between(mean)
+        self._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
+
 
     def set_facecolor(self, color='floralwhite'):
         """Добавляет цвет фона и фон сетки"""
@@ -787,14 +785,16 @@ class Ploter:
         """Задаёт приделы графика"""
         if (left is None) and (right is None):
             radius = ((max(self.distr) - self.middle) + (self.middle - min(self.distr))) / 2
-            left = self.middle - radius
-            right = self.middle + radius
+            left = self.middle - radius * 1.3
+            right = self.middle + radius * 1.3
         if left is None:
             left = min(self.distr) * 1.3 - self.middle * 0.3
         if right is None:
             right = max(self.distr) * 1.3 - self.middle * 0.3
+        self.right_lim = right
+        self.left_lim = left
         self.ax.set_ylim(0, self.max_y)
-        self.ax.set_xlim(left, right)
+        self.ax.set_xlim(self.left_lim, self.right_lim)
 
     def title(self, title):
         """Задаёт название графика"""
@@ -817,7 +817,8 @@ class Ploter:
 
     # сделать возможность автоматизировать
     def _plot_line_and_signature(self, mean, xtext, ytext, x, y):
-        self._plot_arrow(f"{round(self._find_p_level(mean), 5)}", xtext, ytext, x, y,
+        #(self.max_y - mean)/2
+        self._plot_arrow(f"{round(self._find_p_level(mean), 5)}", (max(self.distr) + mean)/2, self.max_y*0.2, max(self.distr)*0.8, self.max_y*0.5,
                          "darkred")  # f"{self._find_p_level(mean)}",self.distr*0.9,self.max_y*0.5,self.distr*0.8,self.max_y*0.3)
 
     def set_labels(self, xlabel, ylabel):
@@ -835,6 +836,7 @@ class Ploter:
 def Distribution_of_the_mean_difference():
     """Распределение разности средних"""
     a1 = Ploter()
+    a1.set_lim()
     a1.plot_hist(Delta[:], 20, "Разность средних")
     a1.plot_middle()
     a1.plot_kde(0.08)
@@ -842,8 +844,7 @@ def Distribution_of_the_mean_difference():
     a1.set_facecolor()
     a1.set_labels("Плотность вероятности", "Разность средних")
     a1.title("Распределение разности средних от Histogram")
-    a1._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
-    a1.set_lim()
+    #a1._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
 
 
 Distribution_of_the_mean_difference()
