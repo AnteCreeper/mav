@@ -785,14 +785,16 @@ class Ploter:
 
     def set_lim(self, left=None, right=None):
         """Задаёт приделы графика"""
+        if (left is None) and (right is None):
+            radius = ((max(self.distr) - self.middle) + (self.middle - min(self.distr))) / 2
+            left = self.middle - radius
+            right = self.middle + radius
         if left is None:
             left = min(self.distr) * 1.3 - self.middle * 0.3
         if right is None:
-            right = max(self.distr) * 1.3 + self.middle * 0.3
+            right = max(self.distr) * 1.3 - self.middle * 0.3
         self.ax.set_ylim(0, self.max_y)
         self.ax.set_xlim(left, right)
-        print(max(self.distr) * 1.3 + self.middle * 0.3)
-        print(left, "  ", right)
 
     def title(self, title):
         """Задаёт название графика"""
