@@ -106,11 +106,12 @@ Delta = np.zeros([1000])
 # бутстреп для 180+30
 
 # дельта будстрепа
+"""
 for i in range(1000):
     Result_All = resample(Result_All[:], replace=False)
     Result_All_Before, Result_All_After = Result_All[:n_size_A], Result_All[n_size_A:]
     Delta[i] = np.mean(Result_All_After) - np.mean(Result_All_Before)
-
+"""
 # бутстреп
 for i in range(1000):
     boot = resample(A[:],  # Список c исходной выборкой
@@ -759,7 +760,7 @@ class Ploter:
         """Рисует прямую описывающую середину гистограммы"""
         self.plot_line(self.middle, colors=self.colorline, linewidth=3, linestyles="--")
 
-    def _fill_between(self, mean, bool_left=False, color='red'):
+    def _fill_between(self, mean, bool_left=False, color='darkred'):
         """Закрытый; закрашивает часть под кривой, и меняет цвет части этой прямой"""
         kde_linespace = np.zeros([1, 2])
         if not bool_left:
@@ -835,11 +836,23 @@ class Ploter:
                          delta_critich,
                          self.max_y * 0.7)
 
+    def get_bootstrep_delta(self, a, b, bins, label, size=1000):
+        """Создает бутстреп разности двух массивов, так же создает гистограмму методом plot_hist"""
+        delta = np.zeros([size])
+        result = np.concatenate([a, b])
+        size_a = len(a)
+        for i in range(size):
+            result = resample(result[:], replace=False)
+            result_before, result_after = result[:size_a], result[size_a:]
+            delta[i] = np.mean(result_before) - np.mean(result_after)
+        self.plot_hist(delta, bins, label)
+
 
 def distribution_of_the_mean_difference():
     """Распределение разности средних"""
     a1 = Ploter()
-    a1.plot_hist(Delta[:], 20, "Разность средних")
+    a1.get_bootstrep_delta(A[:], B[:], 20, "Разность средних")
+    #a1.plot_hist(Delta[:], 20, "Разность средних")
     a1.set_lim()
     a1.plot_kde(0.08)
     a1.plot_middle()
