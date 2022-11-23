@@ -694,10 +694,7 @@ class Ploter:
             ax,
             prop
         """
-        # self.distr = distr
         self.fig, self.ax = plt.subplots(figsize=(12, 4))
-        # self.ax.set_facecolor(colors[2])
-        # print("Hello World, " + self.name)
         self.prop = dict(  # Параметры Отрисовки Гистограммы
             alpha=1.0,  # Прозрачность
             linewidth=2,  # Толщина линии Прямоугольников
@@ -709,10 +706,8 @@ class Ploter:
         """
         Рисует гистограмму
 
-
         distr : массив данных.
         bins : кол-во колбочек на гистограмме.
-
         max_y : максимальная высота в зависимости от инициализируемой сейчас гистограммы 
         """
         self.distr = distr
@@ -778,8 +773,6 @@ class Ploter:
         _x = np.linspace(*kde_linespace[0, :], 1000)
         logprobes = self.kde.score_samples(_x[:, None])
         self.ax.plot(_x, np.exp(logprobes), lw=4, c=color)
-        print(_x[200])
-        print(np.exp(logprobes)[size])
         self.ax.fill_between(_x, np.exp(logprobes), color=color, alpha=0.3)
         self._plot_line_and_signature(mean, x_tex, self.max_y * 0.6, _x[size], np.exp(logprobes)[size])
 
@@ -795,7 +788,6 @@ class Ploter:
         """Рисует p-level"""
         self.plot_line(mean, "--", "darkred", 3)
         self._fill_between(mean)
-        # self._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
 
     def set_facecolor(self, color='floralwhite'):
         """Добавляет цвет фона и фон сетки"""
@@ -809,8 +801,6 @@ class Ploter:
     def _find_p_level(self, mean):
         """Вычисление p level"""
         return (100 - st.percentileofscore(self.distr, mean)) / 100
-
-    #    def _fine_left_or_right()
 
     def _plot_arrow(self, text, xtext, ytext, x, y, color='k'):
         """Вызов аннотации"""
@@ -858,7 +848,6 @@ def distribution_of_the_mean_difference():
     a1.set_facecolor()
     a1.set_labels("Плотность вероятности", "Разность средних")
     a1.title("Распределение разности средних от Histogram")
-    # a1._plot_line_and_signature(mean, 0.7, 0.4, 1, 1)
 
 
 def mistake_one_line():
