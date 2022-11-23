@@ -852,7 +852,6 @@ def distribution_of_the_mean_difference():
     """Распределение разности средних"""
     a1 = Ploter()
     a1.get_bootstrep_delta(A[:], B[:], 20, "Разность средних")
-    #a1.plot_hist(Delta[:], 20, "Разность средних")
     a1.set_lim()
     a1.plot_kde(0.08)
     a1.plot_middle()
