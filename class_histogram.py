@@ -91,8 +91,8 @@ print(len(A), "\t", len(B), "\t", len(Result_All))
 mean_estimate_before = np.mean(A[:])  # ?
 mean_estimate_after = np.mean(B[:])
 mean = mean_estimate_after - mean_estimate_before
-print("before", mean_estimate_before, "\n", "after", mean_estimate_after)
-print(mean)
+# print("before", mean_estimate_before, "\n", "after", mean_estimate_after)
+# print(mean)
 # оценка стандартного отклонения (зачем нужно?)
 standart_deviation_estimate_before = np.std(A[:])
 standart_deviation_estimate_after = np.std(B[:])
