@@ -12,16 +12,14 @@ Created on Sat Aug  7 09:51:40 2021
 
 """
 # библиотеки
-from PyQt5.QtWidgets import *
 # from matplotlib.backends.backend_qt5agg import FigureCanvas
 # from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as st
 from sklearn.utils import resample
 from sklearn.neighbors import KernelDensity  # используем класс из sklearn
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import random
 
 def max_min(a, b, mu=0):
     min_b = min(a)
@@ -56,10 +54,11 @@ def max_min(a, b, mu=0):
 class Solver():
     def __init__(self, list_A: np = None, list_B: np = None, mu=None, SKO=None, n_size_bootstrep=1000):
         if (list_A is None) or (list_B is None):
-            start_random_seed = 990
+            start_random_seed = 999
             np.random.seed(start_random_seed)
+        if mu is None:
             mu = 382
-            persent = 1.002
+        persent = 1.002
         if SKO is None:
             SKO = 0.006 * mu
         if list_A is None:
@@ -107,21 +106,6 @@ class Solver():
             effect[i] = 100 * (np.mean(B_i) - np.mean(A_i[:])) / np.mean(A_i[:])
         return effect
 
-    def get_bootstrep_effect(self):
-        n_size_Metrics_in_effect = 1000
-        metrics_in_effect = np.zeros([n_size_Metrics_in_effect])
-
-        # A_i = np.zeros([self.n_size_A])  # Объявляем массив
-        # B_i = np.zeros([self.n_size_B])  # Объявляем массив
-
-        for i in range(n_size_Metrics_in_effect):
-
-            A_i = resample(self.A, replace=True)
-            B_i = resample(self.B, replace=True)
-
-            metrics_in_effect[i] = np.mean(B_i) - np.mean(A_i[:])
-        return metrics_in_effect
-
     def get_delta_critich(self, delta):
         Alfa = 0.1
         return np.percentile(delta, 100 - Alfa * 100)
@@ -145,7 +129,6 @@ class Ploter(FigureCanvas):
             edgecolor='black',  # Цвет Линии
             facecolor='skyblue')
         self.ax = self.figure.add_subplot()
-        self.distribution_of_the_mean_difference(100,0.006)
 
     def plot_hist(self, distr, bins, label):
         """
@@ -242,11 +225,15 @@ class Ploter(FigureCanvas):
     def title(self, title):
         """Задаёт название графика"""
         self.ax.set_title(title, fontsize=16)  # # Подпись над рисунком
-        plt.draw()
 
     def _find_p_level(self, mean):
         """Вычисление p level"""
-        return (100 - st.percentileofscore(self.distr, mean)) / 100
+        print(mean, "=======")
+        d = (100 - st.percentileofscore(self.distr, mean)) / 100
+        dd = (100 - st.percentileofscore(self.distr, mean)) / 100
+        print(d)
+        print(dd)
+        return dd
 
     def _plot_arrow(self, text, xtext, ytext, x, y, color='k'):
         """Вызов аннотации"""
@@ -284,40 +271,58 @@ class Ploter(FigureCanvas):
         delta = np.zeros([size])
         result = np.concatenate([a, b])
         size_a = len(a)
+        random_state = random.randint(1, 1000)
         for i in range(size):
-            result = resample(result[:], replace=False)
+            result = resample(result[:], replace=False, random_state=random_state)
             result_before, result_after = result[:size_a], result[size_a:]
             delta[i] = np.mean(result_before) - np.mean(result_after)
         self.plot_hist(delta, bins, label)
 
+    def plot_bootstrep_effect(self, A, B, bins, label):
+        n_size_Metrics_in_effect = 1000
+        metrics_in_effect = np.zeros([n_size_Metrics_in_effect])
+
+        # A_i = np.zeros([self.n_size_A])  # Объявляем массив
+        # B_i = np.zeros([self.n_size_B])  # Объявляем массив
+        random_state = random.randint(1, 1000)
+        for i in range(n_size_Metrics_in_effect):
+
+            A_i = resample(A, replace=True)
+            B_i = resample(B, replace=True)
+
+            metrics_in_effect[i] = np.mean(B_i) - np.mean(A_i[:])
+        self.plot_hist(metrics_in_effect, bins, label)
+
     def plot(self):
         sol1 = Solver(mu=100, SKO=0.006)
         self.canvas.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних")
-    def distribution_of_the_mean_difference(self, mu, SKO):
+    def distribution_of_the_mean_difference(self, mu):
         """Распределение разности средних"""
-        sol1 = Solver(mu=mu, SKO=SKO)
+        sol1 = Solver(mu=mu)
         self.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних")
         self.set_lim()
         self.plot_kde(0.08)
         self.plot_middle()
         self.plot_p_level(sol1.get_mean())
+        print(sol1.get_mean(), "<<<<<===")
         self.set_facecolor()
         self.set_labels("Плотность вероятности", "Разность средних")
         self.title("Распределение разности средних от Histogram")
+        self.draw()
+        print()
 
-def mistake_one_line( mu, SKO):
-        sol2 = Solver(mu=mu, SKO=SKO)
-        a2 = Ploter()
-        a2.plot_hist(sol2.get_bootstrep_effect(), 20, "Разность средних")
-        a2.set_lim()
-        a2.plot_kde(0.08)
-        a2.plot_middle()
-        a2.plot_mistake_one_line(sol2.get_delta_critich(sol2.get_bootstrep()))
-        a2.set_facecolor()
-        a2.set_labels("Плотность вероятности", "Разность средних")
-        a2.title("Ошибка первого рода от Histogram")
-        return a2
+    def mistake_one_line(self, mu):
+        sol2 = Solver(mu=mu)
+        self.plot_bootstrep_effect(sol2.A, sol2.B, 20, "Разность средних")
+        self.set_lim()
+        self.plot_kde(0.08)
+        self.plot_middle()
+        self.plot_mistake_one_line(sol2.get_delta_critich(sol2.get_bootstrep()))
+        self.set_facecolor()
+        self.set_labels("Плотность вероятности", "Разность средних")
+        self.title("Ошибка первого рода от Histogram")
+        self.draw()
 
 # distribution_of_the_mean_difference(382, 0.006)
-mistake_one_line(382, 0.006)
+#mistake_one_line(382, 0.006)
 #plt.show()
