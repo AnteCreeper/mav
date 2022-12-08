@@ -1,114 +1,57 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Aug  7 09:51:40 2021
-
-@author: Mavrin S.V.
-
-Для домашнего выполнения лаб. работ необходимо:
-    1. Установить пакет Anaconda: https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe
-    2. После установки запустить Spyder
-    3. Открыть этот файл и выполнить программу.
-
-
-"""
-# библиотеки
-# from matplotlib.backends.backend_qt5agg import FigureCanvas
-# from matplotlib.figure import Figure
 import numpy as np
 import scipy.stats as st
 from sklearn.utils import resample
-from sklearn.neighbors import KernelDensity  # используем класс из sklearn
+from sklearn.neighbors import KernelDensity
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
-
-def max_min(a, b, mu=0):
-    min_b = min(a)
-    min_a = min(b)
-    max_b = max(b)
-    max_a = max(a)
-    if mu == 0:
-        if max_b < max_a:
-            if min_b < min_a:
-                return max_a * 1.0001, min_b * 0.999
-            else:
-                return max_a * 1.0001, min_a * 0.999
-        else:
-            if min_b < min_a:
-                return max_b * 1.0001, min_b * 0.999
-            else:
-                return max_b * 1.0001, min_a * 0.999
-    else:
-        dia = mu / 15
-        if max_b < max_a:
-            if min_b < min_a:
-                return max_a + dia, min_b - dia
-            else:
-                return max_a + dia, min_a - dia
-        else:
-            if min_b < min_a:
-                return max_b + dia, min_b - dia
-            else:
-                return max_b + dia, min_a - dia
+import solver
 
 
-class Solver():
-    def __init__(self, list_A: np = None, list_B: np = None, mu=None, SKO=None, n_size_bootstrep=1000):
-        if (list_A is None) or (list_B is None):
-            start_random_seed = 999
-            np.random.seed(start_random_seed)
-        if mu is None:
-            mu = 382
-        persent = 1.002
-        if SKO is None:
-            SKO = 0.006 * mu
-        if list_A is None:
-            self.n_size_A = 180
-            self.A = np.zeros([self.n_size_A])
-            self.A = np.random.normal(mu, SKO, self.n_size_A)
-        if list_B is None:
-            self.n_size_B = 30
-            self.B = np.zeros([self.n_size_B])
-            self.B = np.random.normal(persent * mu, SKO, self.n_size_B)
-        if list_A is not None:
-            self.A = list_A
-        if list_B is not None:
-            self.B = list_B
-        self.n_size_bootstrep = n_size_bootstrep
+# def max_min(a, b, mu=0):
+#     min_b = min(a)
+#     min_a = min(b)
+#     max_b = max(b)
+#     max_a = max(a)
+#     if mu == 0:
+#         if max_b < max_a:
+#             if min_b < min_a:
+#                 return max_a * 1.0001, min_b * 0.999
+#             else:
+#                 return max_a * 1.0001, min_a * 0.999
+#         else:
+#             if min_b < min_a:
+#                 return max_b * 1.0001, min_b * 0.999
+#             else:
+#                 return max_b * 1.0001, min_a * 0.999
+#     else:
+#         dia = mu / 15
+#         if max_b < max_a:
+#             if min_b < min_a:
+#                 return max_a + dia, min_b - dia
+#             else:
+#                 return max_a + dia, min_a - dia
+#         else:
+#             if min_b < min_a:
+#                 return max_b + dia, min_b - dia
+#             else:
+#                 return max_b + dia, min_a - dia
 
-    def get_mean(self):
-        return np.mean(self.B[:]) - np.mean(self.A[:])
 
-    def get_bootstrep(self):
-        delta = np.zeros([self.n_size_bootstrep])
-        average_value_bootstrep_before = np.zeros([self.n_size_bootstrep])
-        average_value_bootstrep_after = np.zeros([self.n_size_bootstrep])
-        for i in range(self.n_size_bootstrep):
-            boot = resample(self.A,
-                            replace=True,
-                            n_samples=self.n_size_A
-                            )
-            average_value_bootstrep_before[i] = np.mean(boot[:])
-            boot = resample(self.B,
-                            replace=True,
-                            n_samples=self.n_size_B
-                            )
-            average_value_bootstrep_after[i] = np.mean(boot[:])
-            delta[i] = np.mean(average_value_bootstrep_after) - np.mean(average_value_bootstrep_before)
-        return delta
+def normal_array_generator(mu, SKO):
+    n_size_array = 180
+    return np.random.normal(mu, SKO, n_size_array)
 
-    def get_bootstrep_with_replace(self, n_size_Effect=1000):
-        effect = np.zeros([n_size_Effect])
-        # A_i = np.zeros([self.n_size_A])  # Объявляем массив
-        # B_i = np.zeros([self.n_size_B])  # Объявляем массив
-        for i in range(n_size_Effect):
-            A_i = resample(self.A, replace=True)
-            B_i = resample(self.B, replace=True)
-            effect[i] = 100 * (np.mean(B_i) - np.mean(A_i[:])) / np.mean(A_i[:])
-        return effect
 
-    def get_delta_critich(self, delta):
-        Alfa = 0.1
-        return np.percentile(delta, 100 - Alfa * 100)
+def weibull_array_generator(a):
+    n_size_array = 180
+    return np.random.weibull(a, n_size_array)
+
+
+def gamma_array_generator(shape, scale):
+    n_size_array = 180
+    return np.random.gamma(shape, scale, n_size_array)
+
+
 class Ploter(FigureCanvas):
     def __init__(self):
         """Инициализация
@@ -286,7 +229,6 @@ class Ploter(FigureCanvas):
         # B_i = np.zeros([self.n_size_B])  # Объявляем массив
         random_state = random.randint(1, 1000)
         for i in range(n_size_Metrics_in_effect):
-
             A_i = resample(A, replace=True)
             B_i = resample(B, replace=True)
 
@@ -294,11 +236,12 @@ class Ploter(FigureCanvas):
         self.plot_hist(metrics_in_effect, bins, label)
 
     def plot(self):
-        sol1 = Solver(mu=100, SKO=0.006)
+        sol1 = solver.Solver(mu=100, SKO=0.006)
         self.canvas.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних")
+
     def distribution_of_the_mean_difference(self, mu):
         """Распределение разности средних"""
-        sol1 = Solver(mu=mu)
+        sol1 = solver.Solver(mu=mu)
         self.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних")
         self.set_lim()
         self.plot_kde(0.08)
@@ -312,7 +255,7 @@ class Ploter(FigureCanvas):
         print()
 
     def mistake_one_line(self, mu):
-        sol2 = Solver(mu=mu)
+        sol2 = solver.Solver(mu=mu)
         self.plot_bootstrep_effect(sol2.A, sol2.B, 20, "Разность средних")
         self.set_lim()
         self.plot_kde(0.08)
@@ -324,5 +267,5 @@ class Ploter(FigureCanvas):
         self.draw()
 
 # distribution_of_the_mean_difference(382, 0.006)
-#mistake_one_line(382, 0.006)
-#plt.show()
+# mistake_one_line(382, 0.006)
+# plt.show()
