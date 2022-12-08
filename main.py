@@ -61,15 +61,15 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        validator = QIntValidator(100, 999)
+        # validator = QIntValidator(100, 999)
         # combo_box = QComboBox()
         # combo_box.addItems(["...", "Распределение разности средних", "Ошибка первого рода"])
         # combo_box.activated.connect(self.activated)
         button = QPushButton("Вычислить")
         button.clicked.connect(self.button)
-        label1 = QLabel("Среднее значение (μ)")
-        self.line_edit1 = QLineEdit("385")
-        self.line_edit1.setValidator(validator)
+        # label1 = QLabel("Среднее значение (μ)")
+        # self.line_edit1 = QLineEdit("385")
+        # self.line_edit1.setValidator(validator)
         toolbar = NavigationToolbar(self.plot)
         label_0 = QLabel("Определите массив A:")
         label_1 = QLabel("Определите массив B:")
@@ -104,11 +104,11 @@ class MainWindow(QMainWindow):
         grid.addWidget(button_2, 1, 2)
         grid.addWidget(button_3, 1, 3)
 
-        h_box_2 = QHBoxLayout()
-        h_box_2.addStretch()
-        h_box_2.addWidget(label1)
-        h_box_2.addWidget(self.line_edit1)
-        h_box_2.addStretch()
+        # h_box_2 = QHBoxLayout()
+        # h_box_2.addStretch()
+        # h_box_2.addWidget(label1)
+        # h_box_2.addWidget(self.line_edit1)
+        # h_box_2.addStretch()
 
         h_box_3 = QHBoxLayout()
         h_box_3.addWidget(label_2)
@@ -141,16 +141,16 @@ class MainWindow(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def button(self):
-        if self.line_edit1.text() == "":
-            QMessageBox.information(self, "Внимание!", "Введите среднее значение (μ)")
-        else:
-            if self.index == 1:
-                self.plot.ax.clear()
-                self.plot.distribution_of_the_mean_difference(int(self.line_edit1.text()) + 0)
-            if self.index == 2:
-                self.plot.ax.clear()
-                self.plot.mistake_one_line(int(self.line_edit1.text()) + 0)
+    # def button(self):
+    #     if self.line_edit1.text() == "":
+    #         QMessageBox.information(self, "Внимание!", "Введите среднее значение (μ)")
+    #     else:
+    #         if self.index == 1:
+    #             self.plot.ax.clear()
+    #             self.plot.distribution_of_the_mean_difference(int(self.line_edit1.text()) + 0)
+    #         if self.index == 2:
+    #             self.plot.ax.clear()
+    #             self.plot.mistake_one_line(int(self.line_edit1.text()) + 0)
 
     def activated(self, index):
         self.index = index
