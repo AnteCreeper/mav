@@ -5,6 +5,7 @@ from sklearn.neighbors import KernelDensity
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
 import solver
+from math import sqrt
 
 
 # def max_min(a, b, mu=0):
@@ -121,7 +122,7 @@ class Ploter(FigureCanvas):
         kde_linespace = np.zeros([1, 2])
         kde_linespace[0, :] = [self.left_lim, self.right_lim]
         self.x = np.linspace(*kde_linespace[0, :], steps)
-        self.kde = KernelDensity(bandwidth=kde_parametrs)
+        self.kde = KernelDensity(bandwidth=sqrt(self.length)/50)
         self.kde.fit(self.distr[:, None])
         self.logprobes = self.kde.score_samples(self.x[:, None])
         self.ax.plot(self.x, np.exp(self.logprobes), lw=4, c=self.colorline)
@@ -171,12 +172,7 @@ class Ploter(FigureCanvas):
 
     def _find_p_level(self, mean):
         """Вычисление p level"""
-        print(mean, "=======")
-        d = (100 - st.percentileofscore(self.distr, mean)) / 100
-        dd = (100 - st.percentileofscore(self.distr, mean)) / 100
-        print(d)
-        print(dd)
-        return dd
+        return (100 - st.percentileofscore(self.distr, mean)) / 100
 
     def _plot_arrow(self, text, xtext, ytext, x, y, color='k'):
         """Вызов аннотации"""
@@ -198,7 +194,7 @@ class Ploter(FigureCanvas):
         self.ax.set_ylabel(ylabel, fontsize=16)
 
     def plot_mistake_one_line(self, delta_critich):
-        self.plot_line(delta_critich, colors='yellow', linewidth=4)
+        self.plot_line(delta_critich, linestyles="--", colors='yellow', linewidth=4)
         self._fill_between(delta_critich, True, 'yellow')
         self._plot_indication_mistake(delta_critich)
 
@@ -209,7 +205,7 @@ class Ploter(FigureCanvas):
                          delta_critich,
                          self.max_y * 0.7)
 
-    def get_bootstrep_delta(self, a, b, bins, label, size=1000):
+    def get_bootstrep_delta(self, a, b, bins, label, bool_mean, Alfa = None, size=1000):
         """Создает бутстреп разности двух массивов, так же создает гистограмму методом plot_hist"""
         delta = np.zeros([size])
         result = np.concatenate([a, b])
@@ -218,8 +214,12 @@ class Ploter(FigureCanvas):
         for i in range(size):
             result = resample(result[:], replace=False, random_state=random_state)
             result_before, result_after = result[:size_a], result[size_a:]
-            delta[i] = np.mean(result_before) - np.mean(result_after)
+            if bool_mean:
+                delta[i] = np.mean(result_before) - np.mean(result_after)
+            else:
+                delta[i] = np.percentile(result_before, Alfa) - np.percentile(result_after,  Alfa)
         self.plot_hist(delta, bins, label)
+
 
     def plot_bootstrep_effect(self, A, B, bins, label):
         n_size_Metrics_in_effect = 1000
@@ -239,31 +239,45 @@ class Ploter(FigureCanvas):
         sol1 = solver.Solver(mu=100, SKO=0.006)
         self.canvas.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних")
 
-    def distribution_of_the_mean_difference(self, mu):
+    def distribution_of_the_mean_difference(self, list_A, list_B):
         """Распределение разности средних"""
-        sol1 = solver.Solver(mu=mu)
-        self.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних")
+        sol1 = solver.Solver(list_A=list_A, list_B=list_B)
+        self.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних", True)
         self.set_lim()
         self.plot_kde(0.08)
         self.plot_middle()
         self.plot_p_level(sol1.get_mean())
-        print(sol1.get_mean(), "<<<<<===")
         self.set_facecolor()
         self.set_labels("Плотность вероятности", "Разность средних")
         self.title("Распределение разности средних от Histogram")
-        self.draw()
-        print()
 
-    def mistake_one_line(self, mu):
-        sol2 = solver.Solver(mu=mu)
+        self.draw()
+
+    def quantile_difference(self, list_A, list_B, quantile):
+        """Распределение разности средних"""
+        sol1 = solver.Solver(list_A=list_A, list_B=list_B)
+        self.get_bootstrep_delta(sol1.A, sol1.B, 20, "Разность средних", False, quantile)
+        self.set_lim()
+        self.plot_kde(0.08)
+        self.plot_middle()
+        self.plot_p_level(sol1.get_mean())
+        self.set_facecolor()
+        self.set_labels("Плотность вероятности", "Разность средних")
+        self.title("Распределение разности средних от Histogram")
+
+        self.draw()
+
+    def mistake_one_line(self, list_A, list_B, Alfa):
+        sol2 = solver.Solver(list_A=list_A, list_B=list_B)
         self.plot_bootstrep_effect(sol2.A, sol2.B, 20, "Разность средних")
         self.set_lim()
         self.plot_kde(0.08)
         self.plot_middle()
-        self.plot_mistake_one_line(sol2.get_delta_critich(sol2.get_bootstrep()))
+        self.plot_mistake_one_line(sol2.get_delta_critich(sol2.get_bootstrep(), Alfa))
         self.set_facecolor()
         self.set_labels("Плотность вероятности", "Разность средних")
         self.title("Ошибка первого рода от Histogram")
+
         self.draw()
 
 # distribution_of_the_mean_difference(382, 0.006)
