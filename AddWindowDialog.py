@@ -10,7 +10,7 @@ class AddWindowDialog(QDialog):
         super(AddWindowDialog, self).__init__(parent)
         self.double_validator = QDoubleValidator()
         self.int_validator = QIntValidator(1, 100000)
-
+        self.exit_bool = False
         self.label = QLabel("Укажите количество элементов: ")
         self.line_edit = QLineEdit()
         self.line_edit.setValidator(self.int_validator)
@@ -27,12 +27,9 @@ class AddWindowDialog(QDialog):
             self.initUI_gamma()
 
     def initUI_normal(self):
-        print("222")
+        self.setFixedSize(387, 140)
 
         self.label_0 = QLabel("Укажите значение центра μ: ")
-        self.setFixedSize(490, 180)
-
-        self.label_0 = QLabel("Укажите значение μ: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
         first_horizontal_box = QHBoxLayout()
@@ -70,7 +67,8 @@ class AddWindowDialog(QDialog):
         self.initUI_end()
 
     def initUI_weibull(self):
-        self.setFixedSize(350, 100)
+        self.setFixedSize(362, 110)
+
         self.label_0 = QLabel("Укажите параметр формы a: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
@@ -90,7 +88,8 @@ class AddWindowDialog(QDialog):
         self.initUI_end()
 
     def initUI_gamma(self):
-        self.setFixedSize(430, 140)
+        self.setFixedSize(362, 140)
+
         self.label_0 = QLabel("Укажите параметр формы λ: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
@@ -129,3 +128,9 @@ class AddWindowDialog(QDialog):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    # def closeEvent(self, e) -> None:
+    #     parent
+    #     self.exit_bool = True
+    #     # e.accept()
+    #     # QDialog.closeEvent(self, e)

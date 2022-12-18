@@ -58,8 +58,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.index = None
-        self.current_text_0 = "Массив A"
-        self.current_text_1 = "Массив B"
+        self.current_text_0 = 0
+        self.current_text_1 = 0
         self.A_array = None
         self.B_array = None
         self.combo_current_0 = False
@@ -200,6 +200,13 @@ class MainWindow(QMainWindow):
             self.dialog = AWinD.AddWindowDialog(index, self)
             self.dialog.show()
             self.dialog.button.clicked.connect(self.gamma_array_generator)
+        if self.dialog.exec() == QDialog.Rejected:
+            if self.combo_current_0:
+                self.combo_box_0.setCurrentIndex(self.current_text_0)
+            else:
+                self.combo_box_1.setCurrentIndex(self.current_text_1)
+            self.combo_current_0 = self.combo_current_1 = False
+
 
     def add(self):
         h_box = QHBoxLayout()
@@ -216,6 +223,8 @@ class MainWindow(QMainWindow):
             self.label_3.setText("Тип распределения B: " + self.combo_box_1.currentText())
             self.label_4_2.setText("Количество элементов: " + self.dialog.line_edit.text())
             self.combo_current_1 = False
+        self.current_text_0 = self.combo_box_0.currentIndex()
+        self.current_text_1 = self.combo_box_1.currentIndex()
 
     def normal_array_generator(self):
         bool_dialog = False
@@ -359,6 +368,9 @@ class MainWindow(QMainWindow):
         elif text == "10%":
             self.plot.ax.clear()
             self.plot.mistake_one_line(self.A_array, self.B_array, 0.1)
+
+
+
 
 
 if __name__ == '__main__':
