@@ -19,11 +19,11 @@ class AddWindowDialog(QDialog):
         self.zero_horizontal_box.addWidget(self.line_edit)
         self.zero_horizontal_box.addStretch()
         self.setWindowFlag(QtCore.Qt.WindowContextHelpButtonHint, False)
-        if index == 1:
+        if index == 0:
             self.initUI_normal()
-        elif index == 2:
+        elif index == 1:
             self.initUI_weibull()
-        elif index == 3:
+        elif index == 2:
             self.initUI_gamma()
 
     def initUI_normal(self):

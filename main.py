@@ -8,6 +8,31 @@ from PyQt5.QtWidgets import (QMainWindow, QComboBox, QPushButton, QLabel, QLineE
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import AddWindowDialog as AWinD
 
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class ComboBox(QtWidgets.QComboBox):
+    # https://code.qt.io/cgit/qt/qtbase.git/tree/src/widgets/widgets/qcombobox.cpp?h=5.15.2#n3173
+    def paintEvent(self, event):
+
+        painter = QtWidgets.QStylePainter(self)
+        painter.setPen(self.palette().color(QtGui.QPalette.Text))
+
+        # draw the combobox frame, focusrect and selected etc.
+        opt = QtWidgets.QStyleOptionComboBox()
+        self.initStyleOption(opt)
+        painter.drawComplexControl(QtWidgets.QStyle.CC_ComboBox, opt)
+
+        if self.currentIndex() < 0:
+            opt.palette.setBrush(
+                QtGui.QPalette.ButtonText,
+                opt.palette.brush(QtGui.QPalette.ButtonText).color().lighter(),
+            )
+            if self.placeholderText():
+                opt.currentText = self.placeholderText()
+
+        # draw the icon and text
+        painter.drawControl(QtWidgets.QStyle.CE_ComboBoxLabel, opt)
 
 def create_menu(d, menu):
     if isinstance(d, list):
@@ -87,32 +112,35 @@ class MainWindow(QMainWindow):
         # h_box_1 = QHBoxLayout()
         grid.addWidget(label_0, 0, 0)
         grid.addWidget(label_1, 0, 1)
-        self.list_0 = ["Массив A", "Нормальное распределение", "Распределение Вейбулла", "Гамма распределение"]
-        self.combo_box_0 = QComboBox()
+        self.list_0 = ["Нормальное распределение", "Распределение Вейбулла", "Гамма распределение"]
+        self.combo_box_0 = ComboBox()
         self.combo_box_0.addItems(self.list_0)
+        self.combo_box_0.setPlaceholderText("Массив A")
+        self.combo_box_0.setCurrentIndex(-1)
         self.combo_box_0.activated.connect(self.combo_box_activated_0)
-        self.combo_box_1 = QComboBox()
-        self.combo_box_1.addItems(["Массив B", "Нормальное распределение", "Распределение Вейбулла", "Гамма "
-                                                                                                     "распределение"])
+        self.combo_box_1 = ComboBox()
+        self.combo_box_1.addItems(self.list_0)
+        self.combo_box_1.setPlaceholderText("Массив B")
+        self.combo_box_1.setCurrentIndex(-1)
         self.combo_box_1.activated.connect(self.combo_box_activated_1)
         self.menu_0 = QMenu(self)
         create_menu(["Разность средних", {"Разность квантилей": ["10%", "20%", "30%"]}], self.menu_0)
-        self.menu_0.triggered.connect(lambda action: button_2.setText(
+        self.menu_0.triggered.connect(lambda action: self.button_2.setText(
             "Разность квантилей c " + action.text() if action.text() != "Разность средних" else "Разность средних"))
         self.menu_0.triggered.connect(lambda action: self.activate(action.text()))
-        button_2 = QPushButton("Метрика")
-        button_2.setMenu(self.menu_0)
+        self.button_2 = QPushButton("Метрика")
+        self.button_2.setMenu(self.menu_0)
         self.menu_1 = QMenu(self)
         create_menu([{"Вероятность ошибки первого рода": ["1%", "5%", "10%"]}], self.menu_1)
         self.menu_1.triggered.connect(
-            lambda action: button_3.setText("Вероятность ошибки первого рода c " + action.text()))
+            lambda action: self.button_3.setText("Вероятность ошибки первого рода c " + action.text()))
         self.menu_1.triggered.connect(lambda action: self.activate(action.text()))
-        button_3 = QPushButton("Вероятность ошибки первого рода")
-        button_3.setMenu(self.menu_1)
+        self.button_3 = QPushButton("Вероятность ошибки первого рода")
+        self.button_3.setMenu(self.menu_1)
         grid.addWidget(self.combo_box_0, 1, 0)
         grid.addWidget(self.combo_box_1, 1, 1)
-        grid.addWidget(button_2, 1, 2)
-        grid.addWidget(button_3, 1, 3)
+        grid.addWidget(self.button_2, 1, 2)
+        grid.addWidget(self.button_3, 1, 3)
 
         # h_box_2 = QHBoxLayout()
         # h_box_2.addStretch()
@@ -187,15 +215,15 @@ class MainWindow(QMainWindow):
         self.combo_box_activated(index)
 
     def combo_box_activated(self, index):
-        if index == 1:
+        if index == 0:
             self.dialog = AWinD.AddWindowDialog(index, self)
             self.dialog.show()
             self.dialog.button.clicked.connect(self.normal_array_generator)
-        elif index == 2:
+        elif index == 1:
             self.dialog = AWinD.AddWindowDialog(index, self)
             self.dialog.show()
             self.dialog.button.clicked.connect(self.weibull_array_generator)
-        elif index == 3:
+        elif index == 2:
             self.dialog = AWinD.AddWindowDialog(index, self)
             self.dialog.show()
             self.dialog.button.clicked.connect(self.gamma_array_generator)
@@ -237,6 +265,7 @@ class MainWindow(QMainWindow):
             bool_dialog = True
         if bool_dialog:
             errors_str = "".join(errors_list)
+            errors_str = errors_str[:-1]
             QMessageBox.information(self, 'Внимание', errors_str)
         else:
             if self.combo_current_0:
@@ -265,6 +294,7 @@ class MainWindow(QMainWindow):
             bool_dialog = True
         if bool_dialog:
             errors_str = "".join(errors_list)
+            errors_str = errors_str[:-1]
             QMessageBox.information(self, 'Внимание', errors_str)
         else:
             if self.combo_current_0:
@@ -295,6 +325,7 @@ class MainWindow(QMainWindow):
             bool_dialog = True
         if bool_dialog:
             errors_str = "".join(errors_list)
+            errors_str = errors_str[:-1]
             QMessageBox.information(self, 'Внимание', errors_str)
         else:
             if self.combo_current_0:
@@ -319,18 +350,25 @@ class MainWindow(QMainWindow):
             message_box.setText("Массивы А и В пустые!\nЗаполните их!")
             message_box.setIcon(QMessageBox.Warning)
             message_box.exec_()
+            self.button_2.setText("Метрика")
+            self.button_3.setText('Вероятность ошибки первого рода')
+
         elif self.A_array is None:
             message_box = QMessageBox()
             message_box.setWindowTitle("Внимание!")
             message_box.setText("Массив А пуст!\nЗаполните его!")
             message_box.setIcon(QMessageBox.Warning)
             message_box.exec_()
+            self.button_2.setText("Метрика")
+            self.button_3.setText('Вероятность ошибки первого рода')
         elif self.B_array is None:
             message_box = QMessageBox()
             message_box.setWindowTitle("Внимание!")
             message_box.setText("Массив B пуст!\nЗаполните его!")
             message_box.setIcon(QMessageBox.Warning)
             message_box.exec_()
+            self.button_2.setText("Метрика")
+            self.button_3.setText('Вероятность ошибки первого рода')
         elif text == "Разность средних" or text == "10%" or text == "20%" or text == "30%":
             self.activate_0(text)
         elif text == "1%" or text == "5%" or text == "10%":
