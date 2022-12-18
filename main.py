@@ -193,7 +193,6 @@ class MainWindow(QMainWindow):
             self.dialog.button.clicked.connect(self.normal_array_generator)
         elif index == 2:
             self.dialog = AWinD.AddWindowDialog(index, self)
-            print("111")
             self.dialog.show()
             self.dialog.button.clicked.connect(self.weibull_array_generator)
         elif index == 3:
@@ -213,8 +212,6 @@ class MainWindow(QMainWindow):
         h_box.addWidget(self.label_2)
         h_box.addWidget(self.label_3)
         self.vbox.insertLayout(2, h_box)
-        print("\n0", self.combo_current_0)
-        print("1", self.combo_current_1)
         if self.combo_current_0:
             self.label_2.setText("Тип распределения A: " + self.combo_box_0.currentText())
             self.label_4_1.setText("Количество элементов: " + self.dialog.line_edit.text())
@@ -231,7 +228,6 @@ class MainWindow(QMainWindow):
         errors_list = []
         if self.dialog.line_edit.text() == "":
             errors_list.append(self.dialog.label.text()[:-2] + '!' + '\n')
-            print("333")
             bool_dialog = True
         if self.dialog.line_edit_0.text() == "":
             errors_list.append(self.dialog.label_0.text()[:-2] + '!' + '\n')
@@ -247,7 +243,6 @@ class MainWindow(QMainWindow):
                 self.A_array = his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
                                                           float(self.dialog.line_edit_1.text().replace(',', '.')),
                                                           int(self.dialog.line_edit.text()))
-                print("here")
                 self.label_3_1.setText("Центр μ: " + self.dialog.line_edit_0.text())
                 self.label_3_2.setText("Стандартное отклонение σ: " + self.dialog.line_edit_1.text())
             if self.combo_current_1:
@@ -273,13 +268,11 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, 'Внимание', errors_str)
         else:
             if self.combo_current_0:
-                print(self.combo_box_0.currentText())
                 self.A_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
                                                            int(self.dialog.line_edit.text()))
                 self.label_3_1.setText("Форма α: " + self.dialog.line_edit_0.text())
                 self.label_3_2.setText(" ")
             if self.combo_current_1:
-                print(self.combo_box_1.currentText())
                 self.B_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
                                                            int(self.dialog.line_edit.text()))
                 self.label_3_3.setText("Форма α: " + self.dialog.line_edit_0.text())
