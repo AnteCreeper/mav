@@ -2,12 +2,14 @@ from PyQt5.QtWidgets import (QMainWindow, QComboBox, QPushButton, QLabel, QLineE
                              QVBoxLayout, QWidget, QDesktopWidget, QApplication, QMessageBox, QGridLayout, QMenu,
                              QDialog)
 from PyQt5.QtGui import QDoubleValidator
+from PyQt5 import QtCore
 
 
 class AddWindowDialog(QDialog):
     def __init__(self, index, parent):
         super(AddWindowDialog, self).__init__(parent)
         self.double_validator = QDoubleValidator()
+        self.setWindowFlag(QtCore.Qt.WindowContextHelpButtonHint, False)
         if index == 1:
             self.initUI_normal()
         elif index == 2:
@@ -16,6 +18,8 @@ class AddWindowDialog(QDialog):
             self.initUI_gamma()
 
     def initUI_normal(self):
+
+        self.setFixedSize(490, 180)
 
         label_0 = QLabel("Укажите значение μ: ")
         self.line_edit_0 = QLineEdit()
@@ -53,6 +57,7 @@ class AddWindowDialog(QDialog):
         self.initUI_end()
 
     def initUI_weibull(self):
+        self.setFixedSize(350, 100)
         label_0 = QLabel("Укажите значение a: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
@@ -71,6 +76,7 @@ class AddWindowDialog(QDialog):
         self.initUI_end()
 
     def initUI_gamma(self):
+        self.setFixedSize(430, 140)
         label_0 = QLabel("Укажите параметр формы λ: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
@@ -99,7 +105,6 @@ class AddWindowDialog(QDialog):
 
     def initUI_end(self):
         self.setWindowTitle('Построить график')
-        self.resize(650, 650)
         self.center()
         self.show()
 
