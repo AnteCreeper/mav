@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.utils import resample
 
 
-class Solver():
+class Solver:
     def __init__(self, list_A: np = None, list_B: np = None, mu=None, SKO=None, n_size_bootstrep=1000):
         if (list_A is None) or (list_B is None):
             start_random_seed = 999
@@ -60,5 +60,4 @@ class Solver():
         return effect
 
     def get_delta_critich(self, delta, Alfa):
-        print('da2')
         return np.percentile(delta, 100 - Alfa * 100)

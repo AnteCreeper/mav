@@ -202,7 +202,7 @@ class Ploter(FigureCanvas):
                          delta_critich,
                          self.max_y * 0.7)
 
-    def get_bootstrep_delta(self, a, b, bins, label, bool_mean, Alfa = None, size=1000):
+    def get_bootstrep_delta(self, a, b, bins, label, bool_mean, Alfa=None, size=1000):
         """Создает бутстреп разности двух массивов, так же создает гистограмму методом plot_hist"""
         delta = np.zeros([size])
         result = np.concatenate([a, b])
@@ -216,7 +216,6 @@ class Ploter(FigureCanvas):
             else:
                 delta[i] = np.percentile(result_before, Alfa) - np.percentile(result_after,  Alfa)
         self.plot_hist(delta, bins, label)
-
 
     def plot_bootstrep_effect(self, A, B, bins, label):
         n_size_Metrics_in_effect = 1000

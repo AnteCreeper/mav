@@ -165,18 +165,18 @@ class MainWindow(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def button(self):
-        # if self.line_edit1.text() == "":
-        #     QMessageBox.information(self, "Внимание!", "Введите среднее значение (μ)")
-        # else:
-        if self.index == 1:
-            pass
-            # self.plot.ax.clear()
-            # self.plot.distribution_of_the_mean_difference(int(self.line_edit1.text()) + 0)
-        if self.index == 2:
-            pass
-            # self.plot.ax.clear()
-            # self.plot.mistake_one_line(int(self.line_edit1.text()) + 0)
+    # def button(self):
+    #     # if self.line_edit1.text() == "":
+    #     #     QMessageBox.information(self, "Внимание!", "Введите среднее значение (μ)")
+    #     # else:
+    #     if self.index == 1:
+    #         pass
+    #         # self.plot.ax.clear()
+    #         # self.plot.distribution_of_the_mean_difference(int(self.line_edit1.text()) + 0)
+    #     if self.index == 2:
+    #         pass
+    #         # self.plot.ax.clear()
+    #         # self.plot.mistake_one_line(int(self.line_edit1.text()) + 0)
 
     def combo_box_activated_0(self, index):
         self.combo_current_0 = True
@@ -193,6 +193,7 @@ class MainWindow(QMainWindow):
             self.dialog.button.clicked.connect(self.normal_array_generator)
         elif index == 2:
             self.dialog = AWinD.AddWindowDialog(index, self)
+            print("111")
             self.dialog.show()
             self.dialog.button.clicked.connect(self.weibull_array_generator)
         elif index == 3:
@@ -217,13 +218,17 @@ class MainWindow(QMainWindow):
             self.combo_current_1 = False
 
     def normal_array_generator(self):
-        errors_list = []
         bool_dialog = False
+        errors_list = []
+        if self.dialog.line_edit.text() == "":
+            errors_list.append(self.dialog.label.text()[:-2] + '!' + '\n')
+            print("333")
+            bool_dialog = True
         if self.dialog.line_edit_0.text() == "":
-            errors_list.append(self.dialog.label_0.text() + '\n')
+            errors_list.append(self.dialog.label_0.text()[:-2] + '!' + '\n')
             bool_dialog = True
         if self.dialog.line_edit_1.text() == "":
-            errors_list.append(self.dialog.label_1.text() + '\n')
+            errors_list.append(self.dialog.label_1.text()[:-2] + '!' + '\n')
             bool_dialog = True
         if bool_dialog:
             errors_str = "".join(errors_list)
@@ -246,11 +251,13 @@ class MainWindow(QMainWindow):
             self.dialog.close()
 
     def weibull_array_generator(self):
-
         errors_list = []
         bool_dialog = False
+        if self.dialog.line_edit.text() == "":
+            errors_list.append(self.dialog.label.text()[:-2] + '!' + '\n')
+            bool_dialog = True
         if self.dialog.line_edit_0.text() == "":
-            errors_list.append(self.dialog.label_0.text() + '\n')
+            errors_list.append(self.dialog.label_0.text()[:-2] + '!' + '\n')
             bool_dialog = True
         if bool_dialog:
             errors_str = "".join(errors_list)
@@ -260,13 +267,13 @@ class MainWindow(QMainWindow):
                 print(self.combo_box_0.currentText())
                 self.A_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
                                                            int(self.dialog.line_edit.text()))
-                self.label_3_1.setText("Форма a: " + self.dialog.line_edit_0.text())
+                self.label_3_1.setText("Форма α: " + self.dialog.line_edit_0.text())
                 self.label_3_2.setText(" ")
             if self.combo_current_1:
                 print(self.combo_box_1.currentText())
                 self.B_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
                                                            int(self.dialog.line_edit.text()))
-                self.label_3_3.setText("Форма a: " + self.dialog.line_edit_0.text())
+                self.label_3_3.setText("Форма α: " + self.dialog.line_edit_0.text())
                 self.label_3_4.setText(" ")
             self.add()
             self.dialog.close()
@@ -275,11 +282,14 @@ class MainWindow(QMainWindow):
 
         errors_list = []
         bool_dialog = False
+        if self.dialog.line_edit.text() == "":
+            errors_list.append(self.dialog.label.text()[:-2] + '!' + '\n')
+            bool_dialog = True
         if self.dialog.line_edit_0.text() == "":
-            errors_list.append(self.dialog.label_0.text() + '\n')
+            errors_list.append(self.dialog.label_0.text()[:-2] + '!' + '\n')
             bool_dialog = True
         if self.dialog.line_edit_1.text() == "":
-            errors_list.append(self.dialog.label_1.text() + '\n')
+            errors_list.append(self.dialog.label_1.text()[:-2] + '!' + '\n')
             bool_dialog = True
         if bool_dialog:
             errors_str = "".join(errors_list)

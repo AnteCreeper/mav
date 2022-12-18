@@ -4,20 +4,20 @@ from PyQt5.QtWidgets import (QMainWindow, QComboBox, QPushButton, QLabel, QLineE
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 from PyQt5 import QtCore
 
+
 class AddWindowDialog(QDialog):
     def __init__(self, index, parent):
         super(AddWindowDialog, self).__init__(parent)
         self.double_validator = QDoubleValidator()
         self.int_validator = QIntValidator(1, 100000)
 
-        label = QLabel("Укажите количество элементов: ")
+        self.label = QLabel("Укажите количество элементов: ")
         self.line_edit = QLineEdit()
         self.line_edit.setValidator(self.int_validator)
         self.zero_horizontal_box = QHBoxLayout()
-        self.zero_horizontal_box.addWidget(label)
+        self.zero_horizontal_box.addWidget(self.label)
         self.zero_horizontal_box.addWidget(self.line_edit)
         self.zero_horizontal_box.addStretch()
-
         self.setWindowFlag(QtCore.Qt.WindowContextHelpButtonHint, False)
         if index == 1:
             self.initUI_normal()
@@ -27,8 +27,9 @@ class AddWindowDialog(QDialog):
             self.initUI_gamma()
 
     def initUI_normal(self):
+        print("222")
 
-        label_0 = QLabel("Укажите значение центра μ: ")
+        self.label_0 = QLabel("Укажите значение центра μ: ")
         self.setFixedSize(490, 180)
 
         self.label_0 = QLabel("Укажите значение μ: ")
@@ -39,7 +40,7 @@ class AddWindowDialog(QDialog):
         first_horizontal_box.addWidget(self.line_edit_0)
         first_horizontal_box.addStretch()
 
-        label_1 = QLabel("Укажите стандартное отклонение σ: ")
+        self.label_1 = QLabel("Укажите стандартное отклонение σ: ")
         self.line_edit_1 = QLineEdit()
         self.line_edit_1.setValidator(self.double_validator)
         second_horizontal_box = QHBoxLayout()
@@ -65,6 +66,7 @@ class AddWindowDialog(QDialog):
 
         widget_layout = QWidget(self)
         widget_layout.setLayout(vbox)
+
         self.initUI_end()
 
     def initUI_weibull(self):
