@@ -62,6 +62,8 @@ class MainWindow(QMainWindow):
         self.current_text_1 = "Массив B"
         self.A_array = None
         self.B_array = None
+        self.combo_current_0 = False
+        self.combo_current_1 = False
 
         self.plot = his.Ploter()
         self.initUI()
@@ -71,16 +73,16 @@ class MainWindow(QMainWindow):
         # combo_box = QComboBox()
         # combo_box.addItems(["...", "Распределение разности средних", "Ошибка первого рода"])
         # combo_box.activated.connect(self.activated)
-        button = QPushButton("Вычислить")
-        button.clicked.connect(self.button)
+        # button = QPushButton("Вычислить")
+        # button.clicked.connect(self.button)
         # label1 = QLabel("Среднее значение (μ)")
         # self.line_edit1 = QLineEdit("385")
         # self.line_edit1.setValidator(validator)
         toolbar = NavigationToolbar(self.plot)
         label_0 = QLabel("Определите массив A:")
         label_1 = QLabel("Определите массив B:")
-        self.label_2 = QLabel("Тип распределения А: ")
-        self.label_3 = QLabel("Тип распределения B: ")
+        self.label_2 = QLabel(" ")
+        self.label_3 = QLabel(" ")
         grid = QGridLayout()
         # h_box_1 = QHBoxLayout()
         grid.addWidget(label_0, 0, 0)
@@ -88,11 +90,11 @@ class MainWindow(QMainWindow):
         self.list_0 = ["Массив A", "Нормальное распределение", "Распределение Вейбулла", "Гамма распределение"]
         self.combo_box_0 = QComboBox()
         self.combo_box_0.addItems(self.list_0)
-        self.combo_box_0.activated.connect(self.combo_box_activated)
+        self.combo_box_0.activated.connect(self.combo_box_activated_0)
         self.combo_box_1 = QComboBox()
         self.combo_box_1.addItems(["Массив B", "Нормальное распределение", "Распределение Вейбулла", "Гамма "
                                                                                                      "распределение"])
-        self.combo_box_1.activated.connect(self.combo_box_activated)
+        self.combo_box_1.activated.connect(self.combo_box_activated_1)
         self.menu_0 = QMenu(self)
         create_menu(["Разность средних", {"Разность квантилей": ["10%", "20%", "30%"]}], self.menu_0)
         self.menu_0.triggered.connect(lambda action: button_2.setText(
@@ -121,17 +123,33 @@ class MainWindow(QMainWindow):
         h_box_3 = QHBoxLayout()
         h_box_3.addWidget(self.label_2)
         h_box_3.addWidget(self.label_3)
-        h3box = QHBoxLayout()
-        h3box.addStretch()
-        h3box.addWidget(button)
-        h3box.addStretch()
+        self.label_4_1 = QLabel(" ")
+        self.label_4_2 = QLabel(" ")
+        h_box_4 = QHBoxLayout()
+        h_box_4.addWidget(self.label_4_1)
+        h_box_4.addWidget(self.label_4_2)
+        self.label_3_1 = QLabel(" ")
+        self.label_3_2 = QLabel(" ")
+        self.label_3_3 = QLabel(" ")
+        self.label_3_4 = QLabel(" ")
+        h_box_5 = QHBoxLayout()
+        h_box_5.addWidget(self.label_3_1)
+        h_box_5.addWidget(self.label_3_2)
+        h_box_5.addWidget(self.label_3_3)
+        h_box_5.addWidget(self.label_3_4)
+        # h3box = QHBoxLayout()
+        # h3box.addStretch()
+        # h3box.addWidget(button)
+        # h3box.addStretch()
         # insertItem
         self.vbox = QVBoxLayout()
         self.vbox.addWidget(toolbar)
         self.vbox.addLayout(grid)
         self.vbox.addLayout(h_box_3)
+        self.vbox.addLayout(h_box_4)
+        self.vbox.addLayout(h_box_5)
         self.vbox.addWidget(self.plot)
-        self.vbox.addLayout(h3box)
+        # self.vbox.addLayout(h3box)
         widget_layout = QWidget()
         widget_layout.setLayout(self.vbox)
         self.setCentralWidget(widget_layout)
@@ -160,6 +178,14 @@ class MainWindow(QMainWindow):
             # self.plot.ax.clear()
             # self.plot.mistake_one_line(int(self.line_edit1.text()) + 0)
 
+    def combo_box_activated_0(self, index):
+        self.combo_current_0 = True
+        self.combo_box_activated(index)
+
+    def combo_box_activated_1(self, index):
+        self.combo_current_1 = True
+        self.combo_box_activated(index)
+
     def combo_box_activated(self, index):
         if index == 1:
             self.dialog = AWinD.AddWindowDialog(index, self)
@@ -173,47 +199,71 @@ class MainWindow(QMainWindow):
             self.dialog = AWinD.AddWindowDialog(index, self)
             self.dialog.show()
             self.dialog.button.clicked.connect(self.gamma_array_generator)
-        # self.combo_box_0.setCurrentIndex(0)
-        # self.combo_box_1.setCurrentIndex(0)
 
     def add(self):
         h_box = QHBoxLayout()
         h_box.addWidget(self.label_2)
         h_box.addWidget(self.label_3)
         self.vbox.insertLayout(2, h_box)
-        if self.combo_box_0.currentText() != self.current_text_0:
+        print("\n0", self.combo_current_0)
+        print("1", self.combo_current_1)
+        if self.combo_current_0:
             self.label_2.setText("Тип распределения A: " + self.combo_box_0.currentText())
-        if self.combo_box_1.currentText() != self.current_text_1:
+            self.label_4_1.setText("Количество элементов: " + self.dialog.line_edit.text())
+            self.combo_current_0 = False
+        if self.combo_current_1:
             self.label_3.setText("Тип распределения B: " + self.combo_box_1.currentText())
+            self.label_4_2.setText("Количество элементов: " + self.dialog.line_edit.text())
+            self.combo_current_1 = False
 
     def normal_array_generator(self):
-        if self.combo_box_0.currentText() != self.current_text_0:
+        if self.combo_current_0:
             self.A_array = his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                      float(self.dialog.line_edit_1.text().replace(',', '.')))
-        if self.combo_box_1.currentText() != self.current_text_1:
+                                                      float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                      int(self.dialog.line_edit.text()))
+            print("here")
+            self.label_3_1.setText("Центр μ: " + self.dialog.line_edit_0.text())
+            self.label_3_2.setText("Стандартное отклонение σ: " + self.dialog.line_edit_1.text())
+        if self.combo_current_1:
             self.B_array = his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                      float(self.dialog.line_edit_1.text().replace(',', '.')))
+                                                      float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                      int(self.dialog.line_edit.text()))
+            self.label_3_3.setText("Центр μ: " + self.dialog.line_edit_0.text())
+            self.label_3_4.setText("Стандартное отклонение σ: " + self.dialog.line_edit_1.text())
         self.add()
         self.dialog.close()
 
     def weibull_array_generator(self):
-        if self.combo_box_0.currentText() != self.current_text_0:
-            self.A_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')))
-        if self.combo_box_1.currentText() != self.current_text_1:
-            self.B_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')))
+        if self.combo_current_0:
+            print(self.combo_box_0.currentText())
+            self.A_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                       int(self.dialog.line_edit.text()))
+            self.label_3_1.setText("Форма a: " + self.dialog.line_edit_0.text())
+            self.label_3_2.setText(" ")
+        if self.combo_current_1:
+            print(self.combo_box_1.currentText())
+            self.B_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                       int(self.dialog.line_edit.text()))
+            self.label_3_3.setText("Форма a: " + self.dialog.line_edit_0.text())
+            self.label_3_4.setText(" ")
         self.add()
         self.dialog.close()
 
     def gamma_array_generator(self):
-        if self.combo_box_0.currentText() != self.current_text_0:
+        if self.combo_current_0:
             self.A_array = his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                     float(self.dialog.line_edit_1.text().replace(',', '.')))
-        if self.combo_box_1.currentText() != self.current_text_1:
+                                                     float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                     int(self.dialog.line_edit.text()))
+            self.label_3_1.setText("Форма λ: " + self.dialog.line_edit_0.text())
+            self.label_3_2.setText("Масштаб α: " + self.dialog.line_edit_1.text())
+        if self.combo_current_1:
             self.B_array = his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                     float(self.dialog.line_edit_1.text().replace(',', '.')))
+                                                     float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                     int(self.dialog.line_edit.text()))
+            self.label_3_3.setText("Форма λ: " + self.dialog.line_edit_0.text())
+            self.label_3_4.setText("Масштаб α: " + self.dialog.line_edit_1.text())
         self.add()
         self.dialog.close()
-
 
     def activate(self, text):
         if self.A_array is None and self.B_array is None:
@@ -253,9 +303,6 @@ class MainWindow(QMainWindow):
         elif text == "30%":
             self.plot.ax.clear()
             self.plot.quantile_difference(self.A_array, self.B_array, 30)
-
-
-        # if text == "10%":
 
     def activate_1(self, text):
         if text == "1%":

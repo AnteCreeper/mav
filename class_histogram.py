@@ -38,19 +38,16 @@ from math import sqrt
 #                 return max_b + dia, min_a - dia
 
 
-def normal_array_generator(mu, SKO):
-    n_size_array = 180
-    return np.random.normal(mu, SKO, n_size_array)
+def normal_array_generator(mu, SKO, size):
+    return np.random.normal(mu, SKO, size)
 
 
-def weibull_array_generator(a):
-    n_size_array = 180
-    return np.random.weibull(a, n_size_array)
+def weibull_array_generator(a, size):
+    return np.random.weibull(a, size)
 
 
-def gamma_array_generator(shape, scale):
-    n_size_array = 180
-    return np.random.gamma(shape, scale, n_size_array)
+def gamma_array_generator(shape, scale, size):
+    return np.random.gamma(shape, scale, size)
 
 
 class Ploter(FigureCanvas):
