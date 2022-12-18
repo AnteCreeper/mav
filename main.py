@@ -172,18 +172,51 @@ class MainWindow(QMainWindow):
         self.combo_box_1.setCurrentIndex(0)
 
     def normal_array_generator(self):
-        print(his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                         float(self.dialog.line_edit_1.text().replace(',', '.'))))
-        self.dialog.close()
+        errors_list = []
+        bool_dialog = False
+        if self.dialog.line_edit_0.text() == "":
+            errors_list.append(self.dialog.label_0.text() + '\n')
+            bool_dialog = True
+        if self.dialog.line_edit_1.text() == "":
+            errors_list.append(self.dialog.label_1.text() + '\n')
+            bool_dialog = True
+        if bool_dialog:
+            errors_str = "".join(errors_list)
+            QMessageBox.information(self, 'Внимание', errors_str)
+        else:
+            print(his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                             float(self.dialog.line_edit_1.text().replace(',', '.'))))
+            self.dialog.close()
 
     def weibull_array_generator(self):
-        print(his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.'))))
-        self.dialog.close()
+        errors_list = []
+        bool_dialog = False
+        if self.dialog.line_edit_0.text() == "":
+            errors_list.append(self.dialog.label_0.text() + '\n')
+            bool_dialog = True
+        if bool_dialog:
+            errors_str = "".join(errors_list)
+            QMessageBox.information(self, 'Внимание', errors_str)
+        else:
+            print(his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.'))))
+            self.dialog.close()
 
     def gamma_array_generator(self):
-        print(his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                        float(self.dialog.line_edit_1.text().replace(',', '.'))))
-        self.dialog.close()
+        errors_list = []
+        bool_dialog = False
+        if self.dialog.line_edit_0.text() == "":
+            errors_list.append(self.dialog.label_0.text() + '\n')
+            bool_dialog = True
+        if self.dialog.line_edit_1.text() == "":
+            errors_list.append(self.dialog.label_1.text() + '\n')
+            bool_dialog = True
+        if bool_dialog:
+            errors_str = "".join(errors_list)
+            QMessageBox.information(self, 'Внимание', errors_str)
+        else:
+            print(his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                            float(self.dialog.line_edit_1.text().replace(',', '.'))))
+            self.dialog.close()
 
 
 if __name__ == '__main__':

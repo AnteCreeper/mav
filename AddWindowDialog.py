@@ -6,6 +6,7 @@ from PyQt5 import QtCore
 
 
 class AddWindowDialog(QDialog):
+
     def __init__(self, index, parent):
         super(AddWindowDialog, self).__init__(parent)
         self.double_validator = QDoubleValidator()
@@ -21,19 +22,19 @@ class AddWindowDialog(QDialog):
 
         self.setFixedSize(490, 180)
 
-        label_0 = QLabel("Укажите значение μ: ")
+        self.label_0 = QLabel("Укажите значение μ: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
         first_horizontal_box = QHBoxLayout()
-        first_horizontal_box.addWidget(label_0)
+        first_horizontal_box.addWidget(self.label_0)
         first_horizontal_box.addWidget(self.line_edit_0)
         first_horizontal_box.addStretch()
 
-        label_1 = QLabel("Укажите коэффициент для σ: ")
+        self.label_1 = QLabel("Укажите коэффициент для σ: ")
         self.line_edit_1 = QLineEdit()
         self.line_edit_1.setValidator(self.double_validator)
         second_horizontal_box = QHBoxLayout()
-        second_horizontal_box.addWidget(label_1)
+        second_horizontal_box.addWidget(self.label_1)
         second_horizontal_box.addWidget(self.line_edit_1)
         second_horizontal_box.addStretch()
 
@@ -56,13 +57,15 @@ class AddWindowDialog(QDialog):
         widget_layout.setLayout(vbox)
         self.initUI_end()
 
+
+
     def initUI_weibull(self):
         self.setFixedSize(350, 100)
-        label_0 = QLabel("Укажите значение a: ")
+        self.label_0 = QLabel("Укажите значение a: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
         first_horizontal_box = QHBoxLayout()
-        first_horizontal_box.addWidget(label_0)
+        first_horizontal_box.addWidget(self.label_0)
         first_horizontal_box.addWidget(self.line_edit_0)
         first_horizontal_box.addStretch()
 
@@ -77,19 +80,19 @@ class AddWindowDialog(QDialog):
 
     def initUI_gamma(self):
         self.setFixedSize(430, 140)
-        label_0 = QLabel("Укажите параметр формы λ: ")
+        self.label_0 = QLabel("Укажите параметр формы λ: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
         first_horizontal_box = QHBoxLayout()
-        first_horizontal_box.addWidget(label_0)
+        first_horizontal_box.addWidget(self.label_0)
         first_horizontal_box.addWidget(self.line_edit_0)
         first_horizontal_box.addStretch()
 
-        label_1 = QLabel("Укажите параметр масштаба α: ")
+        self.label_1 = QLabel("Укажите параметр масштаба α: ")
         self.line_edit_1 = QLineEdit()
         self.line_edit_1.setValidator(self.double_validator)
         second_horizontal_box = QHBoxLayout()
-        second_horizontal_box.addWidget(label_1)
+        second_horizontal_box.addWidget(self.label_1)
         second_horizontal_box.addWidget(self.line_edit_1)
         second_horizontal_box.addStretch()
 
@@ -114,6 +117,3 @@ class AddWindowDialog(QDialog):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
-    # def button(self):
-    #     pass
