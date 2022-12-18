@@ -217,53 +217,88 @@ class MainWindow(QMainWindow):
             self.combo_current_1 = False
 
     def normal_array_generator(self):
-        if self.combo_current_0:
-            self.A_array = his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                      float(self.dialog.line_edit_1.text().replace(',', '.')),
-                                                      int(self.dialog.line_edit.text()))
-            print("here")
-            self.label_3_1.setText("Центр μ: " + self.dialog.line_edit_0.text())
-            self.label_3_2.setText("Стандартное отклонение σ: " + self.dialog.line_edit_1.text())
-        if self.combo_current_1:
-            self.B_array = his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                      float(self.dialog.line_edit_1.text().replace(',', '.')),
-                                                      int(self.dialog.line_edit.text()))
-            self.label_3_3.setText("Центр μ: " + self.dialog.line_edit_0.text())
-            self.label_3_4.setText("Стандартное отклонение σ: " + self.dialog.line_edit_1.text())
-        self.add()
-        self.dialog.close()
+        errors_list = []
+        bool_dialog = False
+        if self.dialog.line_edit_0.text() == "":
+            errors_list.append(self.dialog.label_0.text() + '\n')
+            bool_dialog = True
+        if self.dialog.line_edit_1.text() == "":
+            errors_list.append(self.dialog.label_1.text() + '\n')
+            bool_dialog = True
+        if bool_dialog:
+            errors_str = "".join(errors_list)
+            QMessageBox.information(self, 'Внимание', errors_str)
+        else:
+            if self.combo_current_0:
+                self.A_array = his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                          float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                          int(self.dialog.line_edit.text()))
+                print("here")
+                self.label_3_1.setText("Центр μ: " + self.dialog.line_edit_0.text())
+                self.label_3_2.setText("Стандартное отклонение σ: " + self.dialog.line_edit_1.text())
+            if self.combo_current_1:
+                self.B_array = his.normal_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                          float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                          int(self.dialog.line_edit.text()))
+                self.label_3_3.setText("Центр μ: " + self.dialog.line_edit_0.text())
+                self.label_3_4.setText("Стандартное отклонение σ: " + self.dialog.line_edit_1.text())
+            self.add()
+            self.dialog.close()
 
     def weibull_array_generator(self):
-        if self.combo_current_0:
-            print(self.combo_box_0.currentText())
-            self.A_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                       int(self.dialog.line_edit.text()))
-            self.label_3_1.setText("Форма a: " + self.dialog.line_edit_0.text())
-            self.label_3_2.setText(" ")
-        if self.combo_current_1:
-            print(self.combo_box_1.currentText())
-            self.B_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                       int(self.dialog.line_edit.text()))
-            self.label_3_3.setText("Форма a: " + self.dialog.line_edit_0.text())
-            self.label_3_4.setText(" ")
-        self.add()
-        self.dialog.close()
+
+        errors_list = []
+        bool_dialog = False
+        if self.dialog.line_edit_0.text() == "":
+            errors_list.append(self.dialog.label_0.text() + '\n')
+            bool_dialog = True
+        if bool_dialog:
+            errors_str = "".join(errors_list)
+            QMessageBox.information(self, 'Внимание', errors_str)
+        else:
+            if self.combo_current_0:
+                print(self.combo_box_0.currentText())
+                self.A_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                           int(self.dialog.line_edit.text()))
+                self.label_3_1.setText("Форма a: " + self.dialog.line_edit_0.text())
+                self.label_3_2.setText(" ")
+            if self.combo_current_1:
+                print(self.combo_box_1.currentText())
+                self.B_array = his.weibull_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                           int(self.dialog.line_edit.text()))
+                self.label_3_3.setText("Форма a: " + self.dialog.line_edit_0.text())
+                self.label_3_4.setText(" ")
+            self.add()
+            self.dialog.close()
 
     def gamma_array_generator(self):
-        if self.combo_current_0:
-            self.A_array = his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                     float(self.dialog.line_edit_1.text().replace(',', '.')),
-                                                     int(self.dialog.line_edit.text()))
-            self.label_3_1.setText("Форма λ: " + self.dialog.line_edit_0.text())
-            self.label_3_2.setText("Масштаб α: " + self.dialog.line_edit_1.text())
-        if self.combo_current_1:
-            self.B_array = his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
-                                                     float(self.dialog.line_edit_1.text().replace(',', '.')),
-                                                     int(self.dialog.line_edit.text()))
-            self.label_3_3.setText("Форма λ: " + self.dialog.line_edit_0.text())
-            self.label_3_4.setText("Масштаб α: " + self.dialog.line_edit_1.text())
-        self.add()
-        self.dialog.close()
+
+        errors_list = []
+        bool_dialog = False
+        if self.dialog.line_edit_0.text() == "":
+            errors_list.append(self.dialog.label_0.text() + '\n')
+            bool_dialog = True
+        if self.dialog.line_edit_1.text() == "":
+            errors_list.append(self.dialog.label_1.text() + '\n')
+            bool_dialog = True
+        if bool_dialog:
+            errors_str = "".join(errors_list)
+            QMessageBox.information(self, 'Внимание', errors_str)
+        else:
+            if self.combo_current_0:
+                self.A_array = his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                         float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                         int(self.dialog.line_edit.text()))
+                self.label_3_1.setText("Форма λ: " + self.dialog.line_edit_0.text())
+                self.label_3_2.setText("Масштаб α: " + self.dialog.line_edit_1.text())
+            if self.combo_current_1:
+                self.B_array = his.gamma_array_generator(float(self.dialog.line_edit_0.text().replace(',', '.')),
+                                                         float(self.dialog.line_edit_1.text().replace(',', '.')),
+                                                         int(self.dialog.line_edit.text()))
+                self.label_3_3.setText("Форма λ: " + self.dialog.line_edit_0.text())
+                self.label_3_4.setText("Масштаб α: " + self.dialog.line_edit_1.text())
+            self.add()
+            self.dialog.close()
 
     def activate(self, text):
         if self.A_array is None and self.B_array is None:

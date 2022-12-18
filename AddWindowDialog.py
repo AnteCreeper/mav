@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (QMainWindow, QComboBox, QPushButton, QLabel, QLineE
                              QVBoxLayout, QWidget, QDesktopWidget, QApplication, QMessageBox, QGridLayout, QMenu,
                              QDialog)
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
-
+from PyQt5 import QtCore
 
 class AddWindowDialog(QDialog):
     def __init__(self, index, parent):
@@ -18,6 +18,7 @@ class AddWindowDialog(QDialog):
         self.zero_horizontal_box.addWidget(self.line_edit)
         self.zero_horizontal_box.addStretch()
 
+        self.setWindowFlag(QtCore.Qt.WindowContextHelpButtonHint, False)
         if index == 1:
             self.initUI_normal()
         elif index == 2:
@@ -28,10 +29,13 @@ class AddWindowDialog(QDialog):
     def initUI_normal(self):
 
         label_0 = QLabel("Укажите значение центра μ: ")
+        self.setFixedSize(490, 180)
+
+        self.label_0 = QLabel("Укажите значение μ: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
         first_horizontal_box = QHBoxLayout()
-        first_horizontal_box.addWidget(label_0)
+        first_horizontal_box.addWidget(self.label_0)
         first_horizontal_box.addWidget(self.line_edit_0)
         first_horizontal_box.addStretch()
 
@@ -39,7 +43,7 @@ class AddWindowDialog(QDialog):
         self.line_edit_1 = QLineEdit()
         self.line_edit_1.setValidator(self.double_validator)
         second_horizontal_box = QHBoxLayout()
-        second_horizontal_box.addWidget(label_1)
+        second_horizontal_box.addWidget(self.label_1)
         second_horizontal_box.addWidget(self.line_edit_1)
         second_horizontal_box.addStretch()
 
@@ -64,11 +68,12 @@ class AddWindowDialog(QDialog):
         self.initUI_end()
 
     def initUI_weibull(self):
-        label_0 = QLabel("Укажите параметр формы a: ")
+        self.setFixedSize(350, 100)
+        self.label_0 = QLabel("Укажите параметр формы a: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
         first_horizontal_box = QHBoxLayout()
-        first_horizontal_box.addWidget(label_0)
+        first_horizontal_box.addWidget(self.label_0)
         first_horizontal_box.addWidget(self.line_edit_0)
         first_horizontal_box.addStretch()
 
@@ -83,19 +88,20 @@ class AddWindowDialog(QDialog):
         self.initUI_end()
 
     def initUI_gamma(self):
-        label_0 = QLabel("Укажите параметр формы λ: ")
+        self.setFixedSize(430, 140)
+        self.label_0 = QLabel("Укажите параметр формы λ: ")
         self.line_edit_0 = QLineEdit()
         self.line_edit_0.setValidator(self.double_validator)
         first_horizontal_box = QHBoxLayout()
-        first_horizontal_box.addWidget(label_0)
+        first_horizontal_box.addWidget(self.label_0)
         first_horizontal_box.addWidget(self.line_edit_0)
         first_horizontal_box.addStretch()
 
-        label_1 = QLabel("Укажите параметр масштаба α: ")
+        self.label_1 = QLabel("Укажите параметр масштаба α: ")
         self.line_edit_1 = QLineEdit()
         self.line_edit_1.setValidator(self.double_validator)
         second_horizontal_box = QHBoxLayout()
-        second_horizontal_box.addWidget(label_1)
+        second_horizontal_box.addWidget(self.label_1)
         second_horizontal_box.addWidget(self.line_edit_1)
         second_horizontal_box.addStretch()
 
@@ -112,7 +118,6 @@ class AddWindowDialog(QDialog):
 
     def initUI_end(self):
         self.setWindowTitle('Построить график')
-        self.resize(650, 650)
         self.center()
         self.show()
 
@@ -122,6 +127,3 @@ class AddWindowDialog(QDialog):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
-    # def button(self):
-    #     pass
